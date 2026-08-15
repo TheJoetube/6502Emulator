@@ -30,6 +30,7 @@ int main(void) {
     fillMemory(&memory);
 
     reset(&cpu, &memory);
+
     execute(&cpu, &memory, inst.LDA_IM.cycles);
 
     return 0;

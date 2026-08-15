@@ -39,10 +39,18 @@ list(REMOVE_ITEM LIB_SOURCES "${CMAKE_SOURCE_DIR}/src/main.c")
 add_executable(${PROJECT_NAME} ${ALL_SOURCES} ${HEADERS})
 
 # Unit test target (uses library sources without main.c)
-add_executable(unit_tests ${TEST_SOURCES} ${UNITY_SOURCES} ${LIB_SOURCES} ${HEADERS})
+# --- Unit Testing ---
+# Loop through every test file found in test/unit/
+foreach(TEST_FILE ${TEST_SOURCES})
+    # Get the filename without the extension (e.g., "ldaTest" from "ldaTest.c")
+    get_filename_component(TEST_NAME ${TEST_FILE} NAME_WE)
 
-# Register the executable with CTest
-add_test(NAME UnitTests COMMAND unit_tests)
+    # Create a unique executable for each test file
+    add_executable(${TEST_NAME} ${TEST_FILE} ${UNITY_SOURCES} ${LIB_SOURCES} ${HEADERS})
+
+    # Register this specific test executable with CTest
+    add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+endforeach()
 
 # --- Resource Folder Synchronization ---
 add_custom_target(copy_resources ALL

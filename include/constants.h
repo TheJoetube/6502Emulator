@@ -10,6 +10,8 @@
 #define MEMSIZE 65536
 #define RESVEC_LO 0xFFFC
 #define RESVEC_HI 0xFFFD
+#define STACKSTART 0x0100
+#define STACKEND 0x01FF
 
 #define NONMATCHCASE "Wtf"
 
@@ -44,7 +46,7 @@ typedef union {
 
 typedef struct {
     Word PC; //program counter
-    Word SP; //stack pointer
+    Byte SP; //stack pointer
     Byte A; //registers
     Byte X;
     Byte Y;
