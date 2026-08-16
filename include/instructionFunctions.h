@@ -54,6 +54,12 @@ typedef union {
         //TAY
         Instruction TAY_IMP;
 
+        //TXA
+        Instruction TXA_IMP;
+
+        //TYA
+        Instruction TYA_IMP;
+
         //TSX
         Instruction TSX_IMP;
 

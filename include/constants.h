@@ -60,7 +60,7 @@ typedef union {
 } Memory;
 
 typedef struct {
-    Byte opcode; //Immediate
+    Byte opcode;
     int cycles;
     Mode mode;
     void (*execute)(CPU*, Memory*, u32* cycles);

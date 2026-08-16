@@ -52,6 +52,12 @@ void initInstructions() {
     //TAY
     inst.TAY_IMP = (Instruction){0xA8,2,Implicit,TAY};
 
+    //TXA
+    inst.TXA_IMP = (Instruction){0x8A,2,Implicit,TXA};
+
+    //TYA
+    inst.TYA_IMP = (Instruction){0x98,2,Implicit,TYA};
+
     //TSX
     inst.TSX_IMP = (Instruction){0xBA,2, Implicit, TSX};
 
@@ -442,6 +448,36 @@ void TAY(CPU* cpu, Memory* memory, u32* cycles) {
     }
     cpu->status.Z = (cpu->Y == 0);
     cpu->status.N = (cpu->Y & 0b10000000) > 0;
+}
+
+void TXA(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Implicit:
+            cpu->A = cpu->X;
+            *cycles -= 1;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+    cpu->status.Z = (cpu->A == 0);
+    cpu->status.N = (cpu->A & 0b10000000) > 0;
+}
+
+void TYA(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Implicit:
+            cpu->A = cpu->Y;
+            *cycles -= 1;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+    cpu->status.Z = (cpu->A == 0);
+    cpu->status.N = (cpu->A & 0b10000000) > 0;
 }
 
 void TSX(CPU* cpu, Memory* memory, u32* cycles) {

@@ -31,7 +31,7 @@ int main(void) {
 
     reset(&cpu, &memory);
 
-    execute(&cpu, &memory, inst.LDA_IM.cycles);
+    //execute(&cpu, &memory, inst.LDA_IM.cycles);
 
     return 0;
 }
