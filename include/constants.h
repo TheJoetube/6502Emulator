@@ -13,12 +13,12 @@
 #define RESVEC_HI 0xFFFD
 #define STACKSTART 0x0100
 #define STACKEND 0x01FF
-#define IRQVEC_LO 0xFFFE
-#define IRQVEC_HI 0xFFFD
+#define IRQVEC_HI 0xFFFE
+#define IRQVEC_LO 0xFFFF
 
 #define NEGATIVEBITMASK 0b10000000
 
-#define NONMATCHCASE "Non matched Instruction"
+#define NONMATCHCASE "Non matched Instruction (From Switch)"
 
 typedef enum {
     Implicit,

@@ -169,7 +169,7 @@ void initInstructions() {
     inst.DEC_ABS_X = (Instruction){0xDE,7,Absolute_X,DEC};
 
     //DEX
-    inst.DEX_IMP = (Instruction){0xCA,2,Implicit,DEC};
+    inst.DEX_IMP = (Instruction){0xCA,2,Implicit,DEX};
 
     //DEY
     inst.DEY_IMP = (Instruction){0x88,2,Implicit,DEY};
@@ -219,13 +219,13 @@ void initInstructions() {
     inst.BCS_REL = (Instruction){0xB0,2,Relative,BCS};
 
     //BEQ
-    inst.BCS_REL = (Instruction){0xF0,2,Relative,BEQ};
+    inst.BEQ_REL = (Instruction){0xF0,2,Relative,BEQ};
 
     //BMI
     inst.BMI_REL = (Instruction){0x30,2,Relative,BMI};
 
     //BNE
-    inst.BMI_REL = (Instruction){0xD0,2,Relative,BNE};
+    inst.BNE_REL = (Instruction){0xD0,2,Relative,BNE};
 
     //BPL
     inst.BPL_REL = (Instruction){0x10,2,Relative,BPL};
@@ -240,7 +240,7 @@ void initInstructions() {
     inst.CLC_IMP = (Instruction){0x18,2,Implicit,CLC};
 
     //CLD
-    inst.CLC_IMP = (Instruction){0xD8,2,Implicit,CLD};
+    inst.CLD_IMP = (Instruction){0xD8,2,Implicit,CLD};
 
     //CLI
     inst.CLI_IMP = (Instruction){0x58,2,Implicit,CLI};
@@ -267,6 +267,13 @@ void initInstructions() {
     inst.NOP_IMP = (Instruction){0xEA,2,Implicit,NOP};
 }
 
+/**
+ * Uses 1 Cycle
+ * @param cycles
+ * @param cpu
+ * @param memory
+ * @return
+ */
 Byte fetchByte(u32* cycles, CPU* cpu, const Memory* memory) {
     const Byte data = memory->data[cpu->PC];
     cpu->PC++;
@@ -274,17 +281,38 @@ Byte fetchByte(u32* cycles, CPU* cpu, const Memory* memory) {
     return data;
 }
 
+/**
+ * Uses 1 Cycle
+ * @param cycles
+ * @param address
+ * @param memory
+ * @return
+ */
 Byte readByte(u32* cycles, const Word address, const Memory* memory) {
     const Byte data = memory->data[address];
     *cycles -= 1;
     return data;
 }
 
+/**
+ * Uses 1 Cycle
+ * @param cycles
+ * @param data
+ * @param address
+ * @param memory
+ */
 void writeByte(u32* cycles, const Byte data, const Word address, Memory* memory) {
     memory->data[address] = data;
     *cycles -= 1;
 }
 
+/**
+ * Uses 2 cycles
+ * @param cycles
+ * @param cpu
+ * @param memory
+ * @return
+ */
 Word fetchWord(u32* cycles, CPU *cpu, const Memory *memory) {
     //6502 is little endian
     Word data = memory->data[cpu->PC];
@@ -297,12 +325,26 @@ Word fetchWord(u32* cycles, CPU *cpu, const Memory *memory) {
     return data;
 }
 
+/**
+ * Uses no cycles
+ * @param cycles
+ * @param address
+ * @param memory
+ * @return
+ */
 Word readWord(u32* cycles, const Word address, const Memory* memory) {
     Byte loByte = readByte(cycles, address, memory);
     Byte hiByte = readByte(cycles, address + 1, memory);
     return loByte | (hiByte << 8);
 }
 
+/**
+ * Uses 2 cycles
+ * @param cycles
+ * @param data
+ * @param address
+ * @param memory
+ */
 void writeWord(u32* cycles, const Word data, const Word address, Memory *memory) {
     memory->data[address] = data & 0xFF;
     memory->data[address+1] = (data >> 8);
@@ -315,6 +357,64 @@ Byte wrapByte(const Word value) {
 
 Word wrapWord(const Word value) {
     return value & 0x00FF;
+}
+
+/**
+ * Uses 2 Cycles
+ * @param cycles
+ * @param cpu
+ * @param data
+ * @param memory
+ */
+void pushWordToStack(u32* cycles, CPU* cpu, Word data, Memory *memory) {
+    writeByte(cycles, data >> 8, STACKSTART + cpu->SP, memory);
+    cpu->SP -= 1;
+
+    writeByte(cycles, data & 0xFF, STACKSTART + cpu->SP, memory);
+    cpu->SP -= 1;
+}
+
+/**
+ * Uses 2 Cycles
+ * @param cycles
+ * @param cpu
+ * @param data
+ * @param memory
+ */
+void pushByteToStack(u32* cycles, CPU* cpu, Byte data, Memory *memory) {
+    memory->data[STACKSTART + cpu->SP] = data;
+    *cycles -= 1;
+    cpu->SP -= 1;
+    *cycles -= 1;
+}
+
+/**
+ * Uses 2 Cycles
+ * @param cycles
+ * @param cpu
+ * @param memory
+ * @return
+ */
+Byte popByteFromStack(u32* cycles, CPU* cpu, Memory *memory) {
+    cpu->SP += 1;
+    *cycles -= 1;
+    const Byte value = memory->data[STACKSTART + cpu->SP];
+    *cycles -= 1;
+    return value;
+}
+
+/**
+ * Uses 3 Cycles
+ * @param cycles
+ * @param cpu
+ * @param memory
+ * @return
+ */
+Word popWordFromStack(u32* cycles, CPU* cpu, Memory *memory) {
+    const Word value = readWord(cycles, STACKSTART + cpu->SP + 1, memory);
+    cpu->SP += 2;
+    *cycles -= 1;
+    return value;
 }
 
 Instruction* getInstruction(const Byte instruction, CPU* cpu) {
@@ -658,9 +758,7 @@ void TXS(CPU* cpu, Memory* memory, u32* cycles) {
 void PHA(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
-            writeByte(cycles, cpu->A, STACKSTART + cpu->SP, memory);
-            cpu->SP--;
-            *cycles -= 1;
+            pushByteToStack(cycles, cpu, cpu->A, memory);
             break;
 
         default:
@@ -672,9 +770,9 @@ void PHA(CPU* cpu, Memory* memory, u32* cycles) {
 void PHP(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
-            writeByte(cycles, cpu->status.value, STACKSTART + cpu->SP, memory);
-            cpu->SP--;
-            *cycles -= 1;
+            cpu->status.B = 1;
+            cpu->status.Unused = 1;
+            pushByteToStack(cycles, cpu, cpu->status.value, memory);
             break;
 
         default:
@@ -686,10 +784,8 @@ void PHP(CPU* cpu, Memory* memory, u32* cycles) {
 void PLA(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
-            const Byte stackByte = readByte(cycles, STACKSTART + cpu->SP, memory);
-            cpu->SP++;
+            const Byte stackByte = popByteFromStack(cycles, cpu, memory);
             cpu->A = stackByte;
-            *cycles -= 2;
             break;
 
         default:
@@ -703,10 +799,8 @@ void PLA(CPU* cpu, Memory* memory, u32* cycles) {
 void PLP(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
-            const Byte stackByte = readByte(cycles, STACKSTART + cpu->SP, memory);
-            cpu->SP++;
+            const Byte stackByte = popByteFromStack(cycles, cpu, memory);
             cpu->status.value = stackByte;
-            *cycles -= 2;
             break;
 
         default:
@@ -1640,8 +1734,7 @@ void JSR(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Absolute:
             const Word subAddr = fetchWord(cycles, cpu, memory);
-            writeWord(cycles, cpu->PC - 1, STACKSTART + cpu->SP, memory);
-            cpu->SP -= 2;
+            pushWordToStack(cycles, cpu, cpu->PC - 1, memory);
             cpu->PC = subAddr;
             *cycles -= 1;
             break;
@@ -1655,10 +1748,8 @@ void JSR(CPU* cpu, Memory* memory, u32* cycles) {
 void RTS(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
-            const Word returnAddress = readWord(cycles, STACKSTART + cpu->SP, memory);
-            cpu->SP += 2;
+            const Word returnAddress = popWordFromStack(cycles, cpu, memory);
             cpu->PC = returnAddress + 1;
-            *cycles -= 3;
             break;
 
         default:
@@ -1889,13 +1980,10 @@ void SEI(CPU* cpu, Memory* memory, u32* cycles) {
 void BRK(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
-            writeWord(cycles, cpu->PC + 1, STACKSTART + cpu->SP, memory);
-            cpu->SP -= 2;
-            writeByte(cycles, cpu->status.value, STACKSTART + cpu->SP, memory);
-            cpu->SP -= 1;
-            cpu->PC = readWord(cycles, IRQVEC_LO, memory);
+            pushWordToStack(cycles, cpu, cpu->PC + 1, memory);
+            pushByteToStack(cycles, cpu, cpu->status.value, memory);
+            cpu->PC = readWord(cycles, IRQVEC_HI, memory);
             cpu->status.B = True;
-            //cpu->status.I = True;
             *cycles -= 1;
             break;
 
@@ -1908,13 +1996,10 @@ void BRK(CPU* cpu, Memory* memory, u32* cycles) {
 void RTI(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
-            const Byte processorFlags = readByte(cycles, STACKSTART + cpu->SP, memory);
+            const Byte processorFlags = popByteFromStack(cycles, cpu, memory);
             cpu->status.value = processorFlags;
-            cpu->SP += 1;
-            const Byte pcValue = readWord(cycles, STACKSTART + cpu->SP, memory);
+            const Word pcValue = popWordFromStack(cycles, cpu, memory);
             cpu->PC = pcValue;
-            cpu->SP += 2;
-            *cycles -= 2;
             break;
 
         default:
