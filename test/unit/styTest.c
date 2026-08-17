@@ -5,6 +5,7 @@
 
 Memory memory;
 CPU cpu;
+RunParams params;
 
 void setUp(void)
 {
@@ -14,6 +15,8 @@ void setUp(void)
     memory.data[RESVEC_HI] = 0x00;
 
     reset(&cpu, &memory);
+
+    setDefaultParams(&params);
 }
 
 void tearDown(void)
@@ -28,7 +31,8 @@ void test_sty_zeropage(void) {
     memory.data[0] = inst.STY_ZP.opcode;
     memory.data[1] = 0x0F;
 
-    execute(&cpu, &memory, inst.STY_ZP.cycles);
+    params.numCycles = inst.STY_ZP.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, memory.data[0x000F]);
 }
@@ -42,7 +46,8 @@ void test_sty_zeropage_x(void) {
     memory.data[0] = inst.STY_ZP_X.opcode;
     memory.data[1] = 0x0F;
 
-    execute(&cpu, &memory, inst.STY_ZP_X.cycles);
+    params.numCycles = inst.STY_ZP_X.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, memory.data[0x0010]);
 }
@@ -56,7 +61,8 @@ void test_sty_absolute(void) {
     memory.data[1] = 0x02;
     memory.data[2] = 0x10;
 
-    execute(&cpu, &memory, inst.STY_ABS.cycles);
+    params.numCycles = inst.STY_ABS.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, memory.data[0x1002]);
 }

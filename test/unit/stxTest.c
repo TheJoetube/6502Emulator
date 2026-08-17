@@ -5,15 +5,16 @@
 
 Memory memory;
 CPU cpu;
+RunParams params;
 
 void setUp(void)
 {
-    initInstructions();
-
     memory.data[RESVEC_LO] = 0x00;
     memory.data[RESVEC_HI] = 0x00;
 
     reset(&cpu, &memory);
+
+    setDefaultParams(&params);
 }
 
 void tearDown(void)
@@ -28,7 +29,8 @@ void test_stx_zeropage(void) {
     memory.data[0] = inst.STX_ZP.opcode;
     memory.data[1] = 0x0F;
 
-    execute(&cpu, &memory, inst.STX_ZP.cycles);
+    params.numCycles = inst.STX_ZP.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, memory.data[0x000F]);
 }
@@ -42,7 +44,8 @@ void test_stx_zeropage_y(void) {
     memory.data[0] = inst.STX_ZP_Y.opcode;
     memory.data[1] = 0x0F;
 
-    execute(&cpu, &memory, inst.STX_ZP_Y.cycles);
+    params.numCycles = inst.STX_ZP_Y.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, memory.data[0x0010]);
 }
@@ -56,7 +59,8 @@ void test_stx_absolute(void) {
     memory.data[1] = 0x02;
     memory.data[2] = 0x10;
 
-    execute(&cpu, &memory, inst.STX_ABS.cycles);
+    params.numCycles = inst.STX_ABS.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, memory.data[0x1002]);
 }

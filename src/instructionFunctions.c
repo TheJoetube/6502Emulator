@@ -112,16 +112,156 @@ void initInstructions() {
 
     //ADC
     inst.ADC_IM = (Instruction){0x69,2,Immediate,ADC};
-    inst.ADC_ZP = (Instruction){0x65,2,ZeroPage,ADC};
-    inst.ADC_ZP_X = (Instruction){0x75,2,ZeroPage_X,ADC};
-    inst.ADC_ABS = (Instruction){0x6D,3,Absolute,ADC};
-    inst.ADC_ABS_X = (Instruction){0x7D,3,Absolute_X,ADC};
-    inst.ADC_ABS_Y = (Instruction){0x79,3,Absolute_Y,ADC};
-    inst.ADC_IN_X = (Instruction){0x61,2,IndexedIndirect,ADC};
-    inst.ADC_IN_Y = (Instruction){0x71,2,IndirectIndexed,ADC};
+    inst.ADC_ZP = (Instruction){0x65,3,ZeroPage,ADC};
+    inst.ADC_ZP_X = (Instruction){0x75,4,ZeroPage_X,ADC};
+    inst.ADC_ABS = (Instruction){0x6D,4,Absolute,ADC};
+    inst.ADC_ABS_X = (Instruction){0x7D,4,Absolute_X,ADC};
+    inst.ADC_ABS_Y = (Instruction){0x79,4,Absolute_Y,ADC};
+    inst.ADC_IN_X = (Instruction){0x61,6,IndexedIndirect,ADC};
+    inst.ADC_IN_Y = (Instruction){0x71,5,IndirectIndexed,ADC};
+
+    //SBC
+    inst.SBC_IM = (Instruction){0xE9,2,Immediate,SBC};
+    inst.SBC_ZP = (Instruction){0xE5,3,ZeroPage,SBC};
+    inst.SBC_ZP_X = (Instruction){0xF5,4,ZeroPage_X,SBC};
+    inst.SBC_ABS = (Instruction){0xED,4,Absolute,SBC};
+    inst.SBC_ABS_X = (Instruction){0xFD,4,Absolute_X,SBC};
+    inst.SBC_ABS_Y = (Instruction){0xF9,4,Absolute_Y,SBC};
+    inst.SBC_IN_X = (Instruction){0xE1,6,IndexedIndirect,SBC};
+    inst.SBC_IN_Y = (Instruction){0xF1,5,IndirectIndexed,SBC};
+
+    //CMP
+    inst.CMP_IM = (Instruction){0xC9,2,Immediate,CMP};
+    inst.CMP_ZP = (Instruction){0xC5,3,ZeroPage,CMP};
+    inst.CMP_ZP_X = (Instruction){0xD5,4,ZeroPage_X,CMP};
+    inst.CMP_ABS = (Instruction){0xCD,4,Absolute,CMP};
+    inst.CMP_ABS_X = (Instruction){0xDD,4,Absolute_X,CMP};
+    inst.CMP_ABS_Y = (Instruction){0xD9,4,Absolute_Y,CMP};
+    inst.CMP_IN_X = (Instruction){0xC1,6,IndexedIndirect,CMP};
+    inst.CMP_IN_Y = (Instruction){0xD1,5,IndirectIndexed,CMP};
+
+    //CPX
+    inst.CPX_IM = (Instruction){0xE0,2,Immediate,CPX};
+    inst.CPX_ZP = (Instruction){0xE4,3,ZeroPage,CPX};
+    inst.CPX_ABS = (Instruction){0xEC, 4, Absolute, CPX};
+
+    //CPY
+    inst.CPY_IM = (Instruction){0xC0,2,Immediate,CPY};
+    inst.CPY_ZP = (Instruction){0xC4,3,ZeroPage,CPY};
+    inst.CPY_ABS = (Instruction){0xCC, 4, Absolute, CPY};
+
+    //INC
+    inst.INC_ZP = (Instruction){0xE6,5,ZeroPage,INC};
+    inst.INC_ZP_X = (Instruction){0xF6,6,ZeroPage_X, INC};
+    inst.INC_ABS = (Instruction){0xEE,6,Absolute, INC};
+    inst.INC_ABS_X = (Instruction){0xFE,7,Absolute_X,INC};
+
+    //INX
+    inst.INX_IMP = (Instruction){0xE8,2,Implicit,INX};
+
+    //INY
+    inst.INY_IMP = (Instruction){0xC8,2,Implicit,INY};
+
+    //DEC
+    inst.DEC_ZP = (Instruction){0xC6,5,ZeroPage,DEC};
+    inst.DEC_ZP_X = (Instruction){0xD6,6,ZeroPage_X, DEC};
+    inst.DEC_ABS = (Instruction){0xCE,6,Absolute, DEC};
+    inst.DEC_ABS_X = (Instruction){0xDE,7,Absolute_X,DEC};
+
+    //DEX
+    inst.DEX_IMP = (Instruction){0xCA,2,Implicit,DEC};
+
+    //DEY
+    inst.DEY_IMP = (Instruction){0x88,2,Implicit,DEY};
+
+    //ASL
+    inst.ASL_ACC = (Instruction){0x0A,2,Accumulator,ASL};
+    inst.ASL_ZP = (Instruction){0x06,5,ZeroPage,ASL};
+    inst.ASL_ZP_X = (Instruction){0x16,6,ZeroPage_X,ASL};
+    inst.ASL_ABS = (Instruction){0x0E,6,Absolute,ASL};
+    inst.ASL_ABS_X = (Instruction){0x1E,7,Absolute_X,ASL};
+
+    //LSR
+    inst.LSR_ACC = (Instruction){0x4A,2,Accumulator,LSR};
+    inst.LSR_ZP = (Instruction){0x46,5,ZeroPage,LSR};
+    inst.LSR_ZP_X = (Instruction){0x56,6,ZeroPage_X,LSR};
+    inst.LSR_ABS = (Instruction){0x4E,6,Absolute,LSR};
+    inst.LSR_ABS_X = (Instruction){0x5E,7,Absolute_X,LSR};
+
+    //ROL
+    inst.ROL_ACC = (Instruction){0x2A,2,Accumulator,ROL};
+    inst.ROL_ZP = (Instruction){0x26,5,ZeroPage,ROL};
+    inst.ROL_ZP_X = (Instruction){0x36,6,ZeroPage_X,ROL};
+    inst.ROL_ABS = (Instruction){0x2E,6,Absolute,ROL};
+    inst.ROL_ABS_X = (Instruction){0x3E,7,Absolute_X,ROL};
+
+    //ROR
+    inst.ROR_ACC = (Instruction){0x6A,2,Accumulator,ROR};
+    inst.ROR_ZP = (Instruction){0x66,5,ZeroPage,ROR};
+    inst.ROR_ZP_X = (Instruction){0x76,6,ZeroPage_X,ROR};
+    inst.ROR_ABS = (Instruction){0x6E,6,Absolute,ROR};
+    inst.ROR_ABS_X = (Instruction){0x7E,7,Absolute_X,ROR};
+
+    //JMP
+    inst.JMP_ABS = (Instruction){0x4C,3,Absolute, JMP};
+    inst.JMP_IND = (Instruction){0x6C,5,Indirect, JMP};
 
     //JSR
     inst.JSR_ABS = (Instruction){0x20,6,Absolute,JSR};
+
+    //RTS
+    inst.RTS_IMP = (Instruction){0x60,6,Implicit,RTS};
+
+    //BCC
+    inst.BCC_REL = (Instruction){0x90,2,Relative,BCC};
+
+    //BCS
+    inst.BCS_REL = (Instruction){0xB0,2,Relative,BCS};
+
+    //BEQ
+    inst.BCS_REL = (Instruction){0xF0,2,Relative,BEQ};
+
+    //BMI
+    inst.BMI_REL = (Instruction){0x30,2,Relative,BMI};
+
+    //BNE
+    inst.BMI_REL = (Instruction){0xD0,2,Relative,BNE};
+
+    //BPL
+    inst.BPL_REL = (Instruction){0x10,2,Relative,BPL};
+
+    //BVC
+    inst.BVC_REL = (Instruction){0x50,2,Relative,BVC};
+
+    //BVS
+    inst.BVS_REL = (Instruction){0x70,2,Relative,BVS};
+
+    //CLC
+    inst.CLC_IMP = (Instruction){0x18,2,Implicit,CLC};
+
+    //CLD
+    inst.CLC_IMP = (Instruction){0xD8,2,Implicit,CLD};
+
+    //CLI
+    inst.CLI_IMP = (Instruction){0x58,2,Implicit,CLI};
+
+    //CLV
+    inst.CLV_IMP = (Instruction){0xB8,2,Implicit,CLV};
+
+    //SEC
+    inst.SEC_IMP = (Instruction){0x38,2,Implicit,SEC};
+
+    //SED
+    inst.SED_IMP = (Instruction){0xF8,2,Implicit,SED};
+
+    //SEI
+    inst.SEI_IMP = (Instruction){0x78,2,Implicit,SEI};
+
+    //BRK
+    inst.BRK_IMP = (Instruction){0x00,7,Implicit,BRK};
+
+    //RTI
+    inst.RTI_IMP = (Instruction){0x40, 6, Implicit, RTI};
 
     //NOP
     inst.NOP_IMP = (Instruction){0xEA,2,Implicit,NOP};
@@ -157,6 +297,12 @@ Word fetchWord(u32* cycles, CPU *cpu, const Memory *memory) {
     return data;
 }
 
+Word readWord(u32* cycles, const Word address, const Memory* memory) {
+    Byte loByte = readByte(cycles, address, memory);
+    Byte hiByte = readByte(cycles, address + 1, memory);
+    return loByte | (hiByte << 8);
+}
+
 void writeWord(u32* cycles, const Word data, const Word address, Memory *memory) {
     memory->data[address] = data & 0xFF;
     memory->data[address+1] = (data >> 8);
@@ -179,6 +325,7 @@ Instruction* getInstruction(const Byte instruction, CPU* cpu) {
             return &inst.instructions[i];
         }
     }
+    printf("Non matched Instruction: 0x%02x\n", instruction);
     cpu->mode = inst.NOP_IMP.mode;
     return &inst.NOP_IMP;
 }
@@ -195,11 +342,11 @@ void LDA(CPU* cpu, Memory* memory, u32* cycles) {
             break;
 
         case ZeroPage_X:
-            Byte zpAddressX = fetchByte(cycles, cpu, memory);
-            zpAddressX += cpu->X;
-            zpAddressX = wrapByte(zpAddressX);
+            Byte zpXAddress = fetchByte(cycles, cpu, memory);
+            zpXAddress += cpu->X;
+            zpXAddress = wrapByte(zpXAddress);
             *cycles -= 1;
-            cpu->A = readByte(cycles, 0x0000 | zpAddressX, memory);
+            cpu->A = readByte(cycles, 0x0000 | zpXAddress, memory);
             break;
 
         case Absolute:
@@ -239,7 +386,7 @@ void LDA(CPU* cpu, Memory* memory, u32* cycles) {
             break;
     }
     cpu->status.Z = (cpu->A == 0);
-    cpu->status.N = (cpu->A & 0b10000000) > 0;
+    cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
 }
 
 void LDX(CPU* cpu, Memory* memory, u32* cycles) {
@@ -276,7 +423,7 @@ void LDX(CPU* cpu, Memory* memory, u32* cycles) {
             break;
     }
     cpu->status.Z = (cpu->X == 0);
-    cpu->status.N = (cpu->X & 0b10000000) > 0;
+    cpu->status.N = (cpu->X & NEGATIVEBITMASK) > 0;
 }
 
 void LDY(CPU* cpu, Memory* memory, u32* cycles) {
@@ -291,10 +438,10 @@ void LDY(CPU* cpu, Memory* memory, u32* cycles) {
             break;
 
         case ZeroPage_X:
-            Byte zpAddressX = fetchByte(cycles, cpu, memory);
-            zpAddressX += cpu->X;
+            Byte zpXAddress = fetchByte(cycles, cpu, memory);
+            zpXAddress += cpu->X;
             *cycles -= 1;
-            cpu->Y = readByte(cycles, 0x0000 | zpAddressX, memory);
+            cpu->Y = readByte(cycles, 0x0000 | zpXAddress, memory);
             break;
 
         case Absolute:
@@ -313,7 +460,7 @@ void LDY(CPU* cpu, Memory* memory, u32* cycles) {
             break;
     }
     cpu->status.Z = (cpu->Y == 0);
-    cpu->status.N = (cpu->Y & 0b10000000) > 0;
+    cpu->status.N = (cpu->Y & NEGATIVEBITMASK) > 0;
 }
 
 void STA(CPU* cpu, Memory* memory, u32* cycles) {
@@ -432,7 +579,7 @@ void TAX(CPU* cpu, Memory* memory, u32* cycles) {
             break;
     }
     cpu->status.Z = (cpu->X == 0);
-    cpu->status.N = (cpu->X & 0b10000000) > 0;
+    cpu->status.N = (cpu->X & NEGATIVEBITMASK) > 0;
 }
 
 void TAY(CPU* cpu, Memory* memory, u32* cycles) {
@@ -447,7 +594,7 @@ void TAY(CPU* cpu, Memory* memory, u32* cycles) {
             break;
     }
     cpu->status.Z = (cpu->Y == 0);
-    cpu->status.N = (cpu->Y & 0b10000000) > 0;
+    cpu->status.N = (cpu->Y & NEGATIVEBITMASK) > 0;
 }
 
 void TXA(CPU* cpu, Memory* memory, u32* cycles) {
@@ -462,7 +609,7 @@ void TXA(CPU* cpu, Memory* memory, u32* cycles) {
             break;
     }
     cpu->status.Z = (cpu->A == 0);
-    cpu->status.N = (cpu->A & 0b10000000) > 0;
+    cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
 }
 
 void TYA(CPU* cpu, Memory* memory, u32* cycles) {
@@ -477,7 +624,7 @@ void TYA(CPU* cpu, Memory* memory, u32* cycles) {
             break;
     }
     cpu->status.Z = (cpu->A == 0);
-    cpu->status.N = (cpu->A & 0b10000000) > 0;
+    cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
 }
 
 void TSX(CPU* cpu, Memory* memory, u32* cycles) {
@@ -492,7 +639,7 @@ void TSX(CPU* cpu, Memory* memory, u32* cycles) {
             break;
     }
     cpu->status.Z = (cpu->X == 0);
-    cpu->status.N = (cpu->X & 0b10000000) > 0;
+    cpu->status.N = (cpu->X & NEGATIVEBITMASK) > 0;
 }
 
 void TXS(CPU* cpu, Memory* memory, u32* cycles) {
@@ -550,7 +697,7 @@ void PLA(CPU* cpu, Memory* memory, u32* cycles) {
             break;
     }
     cpu->status.Z = (cpu->A == 0);
-    cpu->status.N = (cpu->A & 0b10000000) > 0;
+    cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
 }
 
 void PLP(CPU* cpu, Memory* memory, u32* cycles) {
@@ -580,11 +727,11 @@ void AND(CPU* cpu, Memory* memory, u32* cycles) {
             break;
 
         case ZeroPage_X:
-            Byte zpAddressX = fetchByte(cycles, cpu, memory);
-            zpAddressX += cpu->X;
-            zpAddressX = wrapByte(zpAddressX);
+            Byte zpXAddress = fetchByte(cycles, cpu, memory);
+            zpXAddress += cpu->X;
+            zpXAddress = wrapByte(zpXAddress);
             *cycles -= 1;
-            cpu->A &= readByte(cycles, 0x0000 | zpAddressX, memory);
+            cpu->A &= readByte(cycles, 0x0000 | zpXAddress, memory);
             break;
 
         case Absolute:
@@ -624,7 +771,7 @@ void AND(CPU* cpu, Memory* memory, u32* cycles) {
             break;
     }
     cpu->status.Z = (cpu->A == 0);
-    cpu->status.N = (cpu->A & 0b10000000) > 0;
+    cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
 }
 
 void EOR(CPU* cpu, Memory* memory, u32* cycles) {
@@ -639,11 +786,11 @@ void EOR(CPU* cpu, Memory* memory, u32* cycles) {
             break;
 
         case ZeroPage_X:
-            Byte zpAddressX = fetchByte(cycles, cpu, memory);
-            zpAddressX += cpu->X;
-            zpAddressX = wrapByte(zpAddressX);
+            Byte zpXAddress = fetchByte(cycles, cpu, memory);
+            zpXAddress += cpu->X;
+            zpXAddress = wrapByte(zpXAddress);
             *cycles -= 1;
-            cpu->A ^= readByte(cycles, 0x0000 | zpAddressX, memory);
+            cpu->A ^= readByte(cycles, 0x0000 | zpXAddress, memory);
             break;
 
         case Absolute:
@@ -683,7 +830,7 @@ void EOR(CPU* cpu, Memory* memory, u32* cycles) {
             break;
     }
     cpu->status.Z = (cpu->A == 0);
-    cpu->status.N = (cpu->A & 0b10000000) > 0;
+    cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
 }
 
 void ORA(CPU* cpu, Memory* memory, u32* cycles) {
@@ -698,11 +845,11 @@ void ORA(CPU* cpu, Memory* memory, u32* cycles) {
             break;
 
         case ZeroPage_X:
-            Byte zpAddressX = fetchByte(cycles, cpu, memory);
-            zpAddressX += cpu->X;
-            zpAddressX = wrapByte(zpAddressX);
+            Byte zpXAddress = fetchByte(cycles, cpu, memory);
+            zpXAddress += cpu->X;
+            zpXAddress = wrapByte(zpXAddress);
             *cycles -= 1;
-            cpu->A |= readByte(cycles, 0x0000 | zpAddressX, memory);
+            cpu->A |= readByte(cycles, 0x0000 | zpXAddress, memory);
             break;
 
         case Absolute:
@@ -742,7 +889,7 @@ void ORA(CPU* cpu, Memory* memory, u32* cycles) {
             break;
     }
     cpu->status.Z = (cpu->A == 0);
-    cpu->status.N = (cpu->A & 0b10000000) > 0;
+    cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
 }
 
 void BIT(CPU* cpu, Memory* memory, u32* cycles) {
@@ -768,13 +915,719 @@ void BIT(CPU* cpu, Memory* memory, u32* cycles) {
 
     cpu->status.Z = (result == 0x00);
     cpu->status.V = (0b01000000 & memVal) > 0;
-    cpu->status.N = (0b10000000 & memVal) > 0;
+    cpu->status.N = (NEGATIVEBITMASK & memVal) > 0;
 }
 
 void ADC(CPU* cpu, Memory* memory, u32* cycles) {
+    Byte memVal = 0x00;
+    Word result = 0x0000;
+
     switch (cpu->mode) {
         case Immediate:
-            cpu->A += fetchByte(cycles, cpu, memory);
+            memVal = fetchByte(cycles, cpu, memory);
+            break;
+
+        case ZeroPage:
+            const Byte zpAddress = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, 0x0000 | zpAddress, memory);
+            break;
+
+        case ZeroPage_X:
+            Byte zpXAddress = fetchByte(cycles, cpu, memory);
+            zpXAddress += cpu->X;
+            zpXAddress = wrapByte(zpXAddress);
+            *cycles -= 1;
+            memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
+            break;
+
+        case Absolute:
+            const Word absAddress = fetchWord(cycles, cpu, memory);
+            memVal = readByte(cycles, absAddress, memory);
+            break;
+
+        case Absolute_X:
+            Word absXAddress = fetchWord(cycles, cpu, memory);
+            absXAddress += cpu->X;
+            memVal = readByte(cycles, absXAddress, memory);
+            break;
+
+        case Absolute_Y:
+            Word absYAddress = fetchWord(cycles, cpu, memory);
+            absYAddress += cpu->Y;
+            memVal = readByte(cycles, absYAddress, memory);
+            break;
+
+        case IndexedIndirect:
+            Byte indirectXAddress = fetchByte(cycles, cpu, memory);
+            indirectXAddress += cpu->X;
+            indirectXAddress = wrapWord(indirectXAddress);
+            *cycles -= 3;
+            memVal = readByte(cycles, indirectXAddress, memory);
+            break;
+
+        case IndirectIndexed:
+            Byte indirectYAddress = fetchByte(cycles, cpu, memory);
+            indirectYAddress += cpu->Y;
+            *cycles -= 2;
+            memVal = readByte(cycles, indirectYAddress, memory);
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+    const int areSignBitsTheSame = !((cpu->A ^ memVal) & 0b10000000);
+    result = cpu->A + memVal + cpu->status.C;
+    cpu->A = (result & 0xFF);
+
+    cpu->status.Z = (cpu->A == 0);
+    cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
+    cpu->status.C = result > 0xFF;
+    cpu->status.V = areSignBitsTheSame && ((cpu->A ^ memVal) & NEGATIVEBITMASK);
+}
+
+void SBC(CPU* cpu, Memory* memory, u32* cycles) {
+    Byte memVal = 0x00;
+    Word result = 0x0000;
+
+    switch (cpu->mode) {
+        case Immediate:
+            memVal = fetchByte(cycles, cpu, memory);
+            break;
+
+        case ZeroPage:
+            const Byte zpAddress = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, 0x0000 | zpAddress, memory);
+            break;
+
+        case ZeroPage_X:
+            Byte zpXAddress = fetchByte(cycles, cpu, memory);
+            zpXAddress += cpu->X;
+            zpXAddress = wrapByte(zpXAddress);
+            *cycles -= 1;
+            memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
+            break;
+
+        case Absolute:
+            const Word absAddress = fetchWord(cycles, cpu, memory);
+            memVal = readByte(cycles, absAddress, memory);
+            break;
+
+        case Absolute_X:
+            Word absXAddress = fetchWord(cycles, cpu, memory);
+            absXAddress += cpu->X;
+            memVal = readByte(cycles, absXAddress, memory);
+            break;
+
+        case Absolute_Y:
+            Word absYAddress = fetchWord(cycles, cpu, memory);
+            absYAddress += cpu->Y;
+            memVal = readByte(cycles, absYAddress, memory);
+            break;
+
+        case IndexedIndirect:
+            Byte indirectXAddress = fetchByte(cycles, cpu, memory);
+            indirectXAddress += cpu->X;
+            indirectXAddress = wrapWord(indirectXAddress);
+            *cycles -= 3;
+            memVal = readByte(cycles, indirectXAddress, memory);
+            break;
+
+        case IndirectIndexed:
+            Byte indirectYAddress = fetchByte(cycles, cpu, memory);
+            indirectYAddress += cpu->Y;
+            *cycles -= 2;
+            memVal = readByte(cycles, indirectYAddress, memory);
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+    memVal = ~memVal;
+    const int areSignBitsTheSame = !((cpu->A ^ memVal) & NEGATIVEBITMASK);
+    result = cpu->A + memVal + cpu->status.C;
+    cpu->A = (result & 0xFF);
+
+    cpu->status.Z = (cpu->A == 0);
+    cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
+    cpu->status.C = result > 0xFF;
+    cpu->status.V = areSignBitsTheSame && ((cpu->A ^ memVal) & NEGATIVEBITMASK);
+}
+
+void CMP(CPU* cpu, Memory* memory, u32* cycles) {
+    Byte memVal = 0x00;
+
+    switch (cpu->mode) {
+        case Immediate:
+            memVal = fetchByte(cycles, cpu, memory);
+            break;
+
+        case ZeroPage:
+            const Byte zpAddress = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, 0x0000 | zpAddress, memory);
+            break;
+
+        case ZeroPage_X:
+            Byte zpXAddress = fetchByte(cycles, cpu, memory);
+            zpXAddress += cpu->X;
+            zpXAddress = wrapByte(zpXAddress);
+            *cycles -= 1;
+            memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
+            break;
+
+        case Absolute:
+            const Word absAddress = fetchWord(cycles, cpu, memory);
+            memVal = readByte(cycles, absAddress, memory);
+            break;
+
+        case Absolute_X:
+            Word absXAddress = fetchWord(cycles, cpu, memory);
+            absXAddress += cpu->X;
+            memVal = readByte(cycles, absXAddress, memory);
+            break;
+
+        case Absolute_Y:
+            Word absYAddress = fetchWord(cycles, cpu, memory);
+            absYAddress += cpu->Y;
+            memVal = readByte(cycles, absYAddress, memory);
+            break;
+
+        case IndexedIndirect:
+            Byte indirectXAddress = fetchByte(cycles, cpu, memory);
+            indirectXAddress += cpu->X;
+            indirectXAddress = wrapWord(indirectXAddress);
+            *cycles -= 3;
+            memVal = readByte(cycles, indirectXAddress, memory);
+            break;
+
+        case IndirectIndexed:
+            Byte indirectYAddress = fetchByte(cycles, cpu, memory);
+            indirectYAddress += cpu->Y;
+            *cycles -= 2;
+            memVal = readByte(cycles, indirectYAddress, memory);
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+    cpu->status.C = cpu->A >= memVal;
+    cpu->status.Z = cpu->A == memVal;
+    cpu->status.N = ((cpu->A - memVal) & NEGATIVEBITMASK) > 0;
+}
+
+void CPX(CPU* cpu, Memory* memory, u32* cycles) {
+    Byte memVal = 0x00;
+
+    switch (cpu->mode) {
+        case Immediate:
+            memVal = fetchByte(cycles, cpu, memory);
+            break;
+
+        case ZeroPage:
+            const Byte zpAddress = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, 0x0000 | zpAddress, memory);
+            break;
+
+        case Absolute:
+            const Word absAddress = fetchWord(cycles, cpu, memory);
+            memVal = readByte(cycles, absAddress, memory);
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+    cpu->status.C = cpu->X >= memVal;
+    cpu->status.Z = cpu->X == memVal;
+    cpu->status.N = ((cpu->X - memVal) & NEGATIVEBITMASK) > 0;
+}
+
+void CPY(CPU* cpu, Memory* memory, u32* cycles) {
+    Byte memVal = 0x00;
+
+    switch (cpu->mode) {
+        case Immediate:
+            memVal = fetchByte(cycles, cpu, memory);
+            break;
+
+        case ZeroPage:
+            const Byte zpAddress = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, 0x0000 | zpAddress, memory);
+            break;
+
+        case Absolute:
+            const Word absAddress = fetchWord(cycles, cpu, memory);
+            memVal = readByte(cycles, absAddress, memory);
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+    cpu->status.C = cpu->Y >= memVal;
+    cpu->status.Z = cpu->Y == memVal;
+    cpu->status.N = ((cpu->Y - memVal) & NEGATIVEBITMASK) > 0;
+}
+
+void INC(CPU* cpu, Memory* memory, u32* cycles) {
+    Byte memVal = 0x00;
+    switch (cpu->mode) {
+        case ZeroPage:
+            const Byte zpAddress = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, 0x0000 | zpAddress, memory);
+            memVal += 1;
+            *cycles -= 1;
+            writeByte(cycles, memVal, 0x0000 | zpAddress, memory);
+            break;
+
+        case ZeroPage_X:
+            Byte zpXAddress = fetchByte(cycles, cpu, memory);
+            zpXAddress += cpu->X;
+            zpXAddress = wrapByte(zpXAddress);
+            *cycles -= 1;
+            memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
+            memVal += 1;
+            *cycles -= 1;
+            writeByte(cycles, memVal, 0x0000 | zpXAddress, memory);
+            break;
+
+        case Absolute:
+            const Word absAddress = fetchWord(cycles, cpu, memory);
+            memVal = readByte(cycles, absAddress, memory);
+            memVal += 1;
+            *cycles -= 1;
+            writeByte(cycles, memVal, absAddress, memory);
+            break;
+
+        case Absolute_X:
+            Word absXAddress = fetchWord(cycles, cpu, memory);
+            absXAddress += cpu->X;
+            *cycles -= 1;
+            memVal = readByte(cycles, absXAddress, memory);
+            memVal += 1;
+            *cycles -= 1;
+            writeByte(cycles, memVal, absXAddress, memory);
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+    cpu->status.Z = (memVal == 0);
+    cpu->status.N = (memVal & NEGATIVEBITMASK) > 0;
+}
+
+void INX(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Implicit:
+            cpu->X += 1;
+            *cycles -= 1;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+    cpu->status.Z = (cpu->X == 0);
+    cpu->status.N = (cpu->X & NEGATIVEBITMASK) > 0;
+}
+
+void INY(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Implicit:
+            cpu->Y += 1;
+            *cycles -= 1;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+    cpu->status.Z = (cpu->Y == 0);
+    cpu->status.N = (cpu->Y & NEGATIVEBITMASK) > 0;
+}
+
+void DEC(CPU* cpu, Memory* memory, u32* cycles) {
+    Byte memVal = 0x00;
+    switch (cpu->mode) {
+        case ZeroPage:
+            const Byte zpAddress = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, 0x0000 | zpAddress, memory);
+            memVal -= 1;
+            *cycles -= 1;
+            writeByte(cycles, memVal, 0x0000 | zpAddress, memory);
+            break;
+
+        case ZeroPage_X:
+            Byte zpXAddress = fetchByte(cycles, cpu, memory);
+            zpXAddress += cpu->X;
+            zpXAddress = wrapByte(zpXAddress);
+            *cycles -= 1;
+            memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
+            memVal -= 1;
+            *cycles -= 1;
+            writeByte(cycles, memVal, 0x0000 | zpXAddress, memory);
+            break;
+
+        case Absolute:
+            const Word absAddress = fetchWord(cycles, cpu, memory);
+            memVal = readByte(cycles, absAddress, memory);
+            memVal -= 1;
+            *cycles -= 1;
+            writeByte(cycles, memVal, absAddress, memory);
+            break;
+
+        case Absolute_X:
+            Word absXAddress = fetchWord(cycles, cpu, memory);
+            absXAddress += cpu->X;
+            *cycles -= 1;
+            memVal = readByte(cycles, absXAddress, memory);
+            memVal -= 1;
+            *cycles -= 1;
+            writeByte(cycles, memVal, absXAddress, memory);
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+    cpu->status.Z = (memVal == 0);
+    cpu->status.N = (memVal & NEGATIVEBITMASK) > 0;
+}
+
+void DEX(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Implicit:
+            cpu->X -= 1;
+            *cycles -= 1;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+    cpu->status.Z = (cpu->X == 0);
+    cpu->status.N = (cpu->X & NEGATIVEBITMASK) > 0;
+}
+
+void DEY(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Implicit:
+            cpu->Y -= 1;
+            *cycles -= 1;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+    cpu->status.Z = (cpu->Y == 0);
+    cpu->status.N = (cpu->Y & NEGATIVEBITMASK) > 0;
+}
+
+void ASL(CPU* cpu, Memory* memory, u32* cycles) {
+    int isAcc = False;
+    Byte memVal = 0x00;
+    Byte oldVal = 0x00;
+
+    switch (cpu->mode) {
+        case Accumulator:
+            isAcc = True;
+            oldVal = cpu->A;
+            cpu->A = cpu->A << 1;
+            *cycles -= 1;
+            break;
+
+        case ZeroPage:
+            const Byte zpAddress = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, 0x0000 | zpAddress, memory);
+            oldVal = memVal;
+            memVal = memVal << 1;
+            *cycles -= 1;
+            writeByte(cycles, memVal, 0x0000 | zpAddress, memory);
+            break;
+
+        case ZeroPage_X:
+            Byte zpXAddress = fetchByte(cycles, cpu, memory);
+            zpXAddress += cpu->X;
+            *cycles -= 1;
+            memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
+            oldVal = memVal;
+            memVal = memVal << 1;
+            *cycles -= 1;
+            writeByte(cycles, memVal, 0x0000 | zpXAddress, memory);
+            break;
+
+        case Absolute:
+            const Word absAddress = fetchWord(cycles, cpu, memory);
+            memVal = readByte(cycles, absAddress, memory);
+            oldVal = memVal;
+            memVal = memVal << 1;
+            *cycles -= 1;
+            writeByte(cycles, memVal, absAddress, memory);
+            break;
+
+        case Absolute_X:
+            Word absXAddress = fetchWord(cycles, cpu, memory);
+            absXAddress += cpu->X;
+            *cycles -= 1;
+            memVal = readByte(cycles, absXAddress, memory);
+            oldVal = memVal;
+            memVal = memVal << 1;
+            *cycles -= 1;
+            writeByte(cycles, memVal, absXAddress, memory);
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+    if (isAcc) {
+        cpu->status.Z = (cpu->A == 0);
+        cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
+    } else {
+        cpu->status.Z = (memVal == 0);
+        cpu->status.N = (memVal & NEGATIVEBITMASK) > 0;
+    }
+    cpu->status.C = (oldVal & NEGATIVEBITMASK) > 0;
+}
+
+void LSR(CPU* cpu, Memory* memory, u32* cycles) {
+    int isAcc = False;
+    Byte memVal = 0x00;
+    Byte oldVal = 0x00;
+
+    switch (cpu->mode) {
+        case Accumulator:
+            isAcc = True;
+            oldVal = cpu->A;
+            cpu->A = cpu->A >> 1;
+            *cycles -= 1;
+            break;
+
+        case ZeroPage:
+            const Byte zpAddress = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, 0x0000 | zpAddress, memory);
+            oldVal = memVal;
+            memVal = memVal >> 1;
+            *cycles -= 1;
+            writeByte(cycles, memVal, 0x0000 | zpAddress, memory);
+            break;
+
+        case ZeroPage_X:
+            Byte zpXAddress = fetchByte(cycles, cpu, memory);
+            zpXAddress += cpu->X;
+            *cycles -= 1;
+            memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
+            oldVal = memVal;
+            memVal = memVal >> 1;
+            *cycles -= 1;
+            writeByte(cycles, memVal, 0x0000 | zpXAddress, memory);
+            break;
+
+        case Absolute:
+            const Word absAddress = fetchWord(cycles, cpu, memory);
+            memVal = readByte(cycles, absAddress, memory);
+            oldVal = memVal;
+            memVal = memVal >> 1;
+            *cycles -= 1;
+            writeByte(cycles, memVal, absAddress, memory);
+            break;
+
+        case Absolute_X:
+            Word absXAddress = fetchWord(cycles, cpu, memory);
+            absXAddress += cpu->X;
+            *cycles -= 1;
+            memVal = readByte(cycles, absXAddress, memory);
+            oldVal = memVal;
+            memVal = memVal >> 1;
+            *cycles -= 1;
+            writeByte(cycles, memVal, absXAddress, memory);
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+    if (isAcc) {
+        cpu->status.Z = (cpu->A == 0);
+        cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
+    } else {
+        cpu->status.Z = (memVal == 0);
+        cpu->status.N = (memVal & NEGATIVEBITMASK) > 0;
+    }
+    cpu->status.C = (oldVal & 0b00000001) > 0;
+}
+
+void ROL(CPU* cpu, Memory* memory, u32* cycles) {
+    int isAcc = False;
+    Byte memVal = 0x00;
+    Byte oldVal = 0x00;
+    const Byte newBit0 = cpu->status.C ? 0b00000001 : 0;
+
+    switch (cpu->mode) {
+        case Accumulator:
+            isAcc = True;
+            oldVal = cpu->A;
+            cpu->A = cpu->A << 1;
+            cpu->A |= newBit0;
+            *cycles -= 1;
+            break;
+
+        case ZeroPage:
+            const Byte zpAddress = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, 0x0000 | zpAddress, memory);
+            oldVal = memVal;
+            memVal = memVal << 1;
+            memVal |= newBit0;
+            *cycles -= 1;
+            writeByte(cycles, memVal, 0x0000 | zpAddress, memory);
+            break;
+
+        case ZeroPage_X:
+            Byte zpXAddress = fetchByte(cycles, cpu, memory);
+            zpXAddress += cpu->X;
+            *cycles -= 1;
+            memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
+            oldVal = memVal;
+            memVal = memVal << 1;
+            memVal |= newBit0;
+            *cycles -= 1;
+            writeByte(cycles, memVal, 0x0000 | zpXAddress, memory);
+            break;
+
+        case Absolute:
+            const Word absAddress = fetchWord(cycles, cpu, memory);
+            memVal = readByte(cycles, absAddress, memory);
+            oldVal = memVal;
+            memVal = memVal << 1;
+            memVal |= newBit0;
+            *cycles -= 1;
+            writeByte(cycles, memVal, absAddress, memory);
+            break;
+
+        case Absolute_X:
+            Word absXAddress = fetchWord(cycles, cpu, memory);
+            absXAddress += cpu->X;
+            *cycles -= 1;
+            memVal = readByte(cycles, absXAddress, memory);
+            oldVal = memVal;
+            memVal = memVal << 1;
+            memVal |= newBit0;
+            *cycles -= 1;
+            writeByte(cycles, memVal, absXAddress, memory);
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+    if (isAcc) {
+        cpu->status.Z = (cpu->A == 0);
+        cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
+    } else {
+        cpu->status.Z = (memVal == 0);
+        cpu->status.N = (memVal & NEGATIVEBITMASK) > 0;
+    }
+    cpu->status.C = (oldVal & NEGATIVEBITMASK) > 0;
+}
+
+void ROR(CPU* cpu, Memory* memory, u32* cycles) {
+    int isAcc = False;
+    Byte memVal = 0x00;
+    int oldBit0 = False;
+
+    switch (cpu->mode) {
+        case Accumulator:
+            isAcc = True;
+            oldBit0 = (cpu->A & 0b00000001) > 0 ? True : False;
+            cpu->A = cpu->A >> 1;
+            if (cpu->status.C) {
+                cpu->A |= NEGATIVEBITMASK;
+            }
+            *cycles -= 1;
+            break;
+
+        case ZeroPage:
+            const Byte zpAddress = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, 0x0000 | zpAddress, memory);
+            oldBit0 = (memVal & 0b00000001) > 0 ? True : False;
+            memVal = memVal >> 1;
+            if (cpu->status.C) {
+                memVal |= NEGATIVEBITMASK;
+            }
+            *cycles -= 1;
+            writeByte(cycles, memVal, 0x0000 | zpAddress, memory);
+            break;
+
+        case ZeroPage_X:
+            Byte zpXAddress = fetchByte(cycles, cpu, memory);
+            zpXAddress += cpu->X;
+            *cycles -= 1;
+            memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
+            oldBit0 = (memVal & 0b00000001) > 0 ? True : False;
+            memVal = memVal >> 1;
+            if (cpu->status.C) {
+                memVal |= NEGATIVEBITMASK;
+            }
+            *cycles -= 1;
+            writeByte(cycles, memVal, 0x0000 | zpXAddress, memory);
+            break;
+
+        case Absolute:
+            const Word absAddress = fetchWord(cycles, cpu, memory);
+            memVal = readByte(cycles, absAddress, memory);
+            oldBit0 = (memVal & 0b00000001) > 0 ? True : False;
+            memVal = memVal >> 1;
+            if (cpu->status.C) {
+                memVal |= NEGATIVEBITMASK;
+            }
+            *cycles -= 1;
+            writeByte(cycles, memVal, absAddress, memory);
+            break;
+
+        case Absolute_X:
+            Word absXAddress = fetchWord(cycles, cpu, memory);
+            absXAddress += cpu->X;
+            *cycles -= 1;
+            memVal = readByte(cycles, absXAddress, memory);
+            oldBit0 = (memVal & 0b00000001) > 0 ? True : False;
+            memVal = memVal >> 1;
+            if (cpu->status.C) {
+                memVal |= NEGATIVEBITMASK;
+            }
+            *cycles -= 1;
+            writeByte(cycles, memVal, absXAddress, memory);
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+    if (isAcc) {
+        cpu->status.Z = (cpu->A == 0);
+        cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
+    } else {
+        cpu->status.Z = (memVal == 0);
+        cpu->status.N = (memVal & NEGATIVEBITMASK) > 0;
+    }
+    cpu->status.C = oldBit0;
+}
+
+void JMP(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Absolute:
+            const Word jmpAddr = fetchWord(cycles, cpu, memory);
+            cpu->PC = jmpAddr;
+            break;
+
+        case Indirect:
+            const Word jmpIndAddr = fetchWord(cycles, cpu, memory);
+            const Byte lowByte = readByte(cycles, jmpIndAddr, memory);
+            const Byte highByte = readByte(cycles, jmpIndAddr + 1, memory);
+            cpu->PC = (Word) (highByte << 8) | lowByte;
             break;
 
         default:
@@ -788,9 +1641,280 @@ void JSR(CPU* cpu, Memory* memory, u32* cycles) {
         case Absolute:
             const Word subAddr = fetchWord(cycles, cpu, memory);
             writeWord(cycles, cpu->PC - 1, STACKSTART + cpu->SP, memory);
+            cpu->SP -= 2;
             cpu->PC = subAddr;
-            cpu->SP--;
             *cycles -= 1;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+}
+
+void RTS(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Implicit:
+            const Word returnAddress = readWord(cycles, STACKSTART + cpu->SP, memory);
+            cpu->SP += 2;
+            cpu->PC = returnAddress + 1;
+            *cycles -= 3;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+}
+
+void BCC(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Relative:
+            const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
+            if (!cpu->status.C) {
+                cpu->PC += offset;
+            }
+            *cycles -= 1;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+}
+
+void BCS(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Relative:
+            const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
+            if (cpu->status.C) {
+                cpu->PC += offset;
+            }
+            *cycles -= 1;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+}
+
+void BEQ(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Relative:
+            const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
+            if (cpu->status.Z) {
+                cpu->PC += offset;
+            }
+            *cycles -= 1;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+}
+
+void BMI(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Relative:
+            const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
+            if (cpu->status.N) {
+                cpu->PC += offset;
+            }
+            *cycles -= 1;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+}
+
+void BNE(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Relative:
+            const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
+            if (!cpu->status.Z) {
+                cpu->PC += offset;
+            }
+            *cycles -= 1;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+}
+
+void BPL(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Relative:
+            const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
+            if (!cpu->status.N) {
+                cpu->PC += offset;
+            }
+            *cycles -= 1;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+}
+
+void BVC(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Relative:
+            const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
+            if (!cpu->status.V) {
+                cpu->PC += offset;
+            }
+            *cycles -= 1;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+}
+
+void BVS(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Relative:
+            const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
+            if (cpu->status.V) {
+                cpu->PC += offset;
+            }
+            *cycles -= 1;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+}
+
+void CLC(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Implicit:
+            cpu->status.C = 0;
+            *cycles -= 1;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+}
+
+void CLD(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Implicit:
+            cpu->status.D = 0;
+            *cycles -= 1;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+}
+
+void CLI(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Implicit:
+            cpu->status.I = 0;
+            *cycles -= 1;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+}
+
+void CLV(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Implicit:
+            cpu->status.V = 0;
+            *cycles -= 1;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+}
+
+void SEC(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Implicit:
+            cpu->status.C = 1;
+            *cycles -= 1;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+}
+
+void SED(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Implicit:
+            cpu->status.D = 1;
+            *cycles -= 1;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+}
+
+void SEI(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Implicit:
+            cpu->status.I = 1;
+            *cycles -= 1;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+}
+
+void BRK(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Implicit:
+            writeWord(cycles, cpu->PC + 1, STACKSTART + cpu->SP, memory);
+            cpu->SP -= 2;
+            writeByte(cycles, cpu->status.value, STACKSTART + cpu->SP, memory);
+            cpu->SP -= 1;
+            cpu->PC = readWord(cycles, IRQVEC_LO, memory);
+            cpu->status.B = True;
+            //cpu->status.I = True;
+            *cycles -= 1;
+            break;
+
+        default:
+            printf("%s", NONMATCHCASE);
+            break;
+    }
+}
+
+void RTI(CPU* cpu, Memory* memory, u32* cycles) {
+    switch (cpu->mode) {
+        case Implicit:
+            const Byte processorFlags = readByte(cycles, STACKSTART + cpu->SP, memory);
+            cpu->status.value = processorFlags;
+            cpu->SP += 1;
+            const Byte pcValue = readWord(cycles, STACKSTART + cpu->SP, memory);
+            cpu->PC = pcValue;
+            cpu->SP += 2;
+            *cycles -= 2;
             break;
 
         default:

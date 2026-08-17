@@ -5,15 +5,16 @@
 
 Memory memory;
 CPU cpu;
+RunParams params;
 
 void setUp(void)
 {
-    initInstructions();
-
     memory.data[RESVEC_LO] = 0x00;
     memory.data[RESVEC_HI] = 0x00;
 
     reset(&cpu, &memory);
+
+    setDefaultParams(&params);
 }
 
 void tearDown(void)
@@ -28,7 +29,8 @@ void test_tsx_imp(void) {
 
     memory.data[0] = inst.TSX_IMP.opcode;
 
-    execute(&cpu, &memory, inst.TSX_IMP.cycles);
+    params.numCycles = inst.TSX_IMP.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, cpu.X);
 }
@@ -41,7 +43,8 @@ void test_txs_imp(void) {
 
     memory.data[0] = inst.TXS_IMP.opcode;
 
-    execute(&cpu, &memory, inst.TXS_IMP.cycles);
+    params.numCycles = inst.TXS_IMP.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, cpu.SP);
 }
@@ -53,7 +56,8 @@ void test_pha_imp(void) {
 
     memory.data[0] = inst.PHA_IMP.opcode;
 
-    execute(&cpu, &memory, inst.PHA_IMP.cycles);
+    params.numCycles = inst.PHA_IMP.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, memory.data[STACKSTART + cpu.SP+1]);
 }
@@ -65,7 +69,8 @@ void test_php_imp(void) {
 
     memory.data[0] = inst.PHP_IMP.opcode;
 
-    execute(&cpu, &memory, inst.PHP_IMP.cycles);
+    params.numCycles = inst.PHP_IMP.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, memory.data[STACKSTART + cpu.SP+1]);
 }
@@ -77,7 +82,8 @@ void test_pla_imp(void) {
 
     memory.data[0] = inst.PLA_IMP.opcode;
 
-    execute(&cpu, &memory, inst.PLA_IMP.cycles);
+    params.numCycles = inst.PLA_IMP.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, cpu.A);
 }
@@ -89,7 +95,8 @@ void test_plp_imp(void) {
 
     memory.data[0] = inst.PLP_IMP.opcode;
 
-    execute(&cpu, &memory, inst.PLP_IMP.cycles);
+    params.numCycles = inst.PLP_IMP.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, cpu.status.value);
 }

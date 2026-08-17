@@ -5,15 +5,16 @@
 
 Memory memory;
 CPU cpu;
+RunParams params;
 
 void setUp(void)
 {
-    initInstructions();
-
     memory.data[RESVEC_LO] = 0x00;
     memory.data[RESVEC_HI] = 0x00;
 
     reset(&cpu, &memory);
+
+    setDefaultParams(&params);
 }
 
 void tearDown(void)
@@ -28,7 +29,8 @@ void test_tax_imp(void) {
 
     memory.data[0] = inst.TAX_IMP.opcode;
 
-    execute(&cpu, &memory, inst.TAX_IMP.cycles);
+    params.numCycles = inst.TAX_IMP.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, cpu.X);
 }
@@ -41,7 +43,8 @@ void test_tay_imp(void) {
 
     memory.data[0] = inst.TAY_IMP.opcode;
 
-    execute(&cpu, &memory, inst.TAY_IMP.cycles);
+    params.numCycles = inst.TAY_IMP.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, cpu.Y);
 }
@@ -54,7 +57,8 @@ void test_txa_imp(void) {
 
     memory.data[0] = inst.TXA_IMP.opcode;
 
-    execute(&cpu, &memory, inst.TXA_IMP.cycles);
+    params.numCycles = inst.TXA_IMP.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, cpu.A);
 }
@@ -67,7 +71,8 @@ void test_tya_imp(void) {
 
     memory.data[0] = inst.TYA_IMP.opcode;
 
-    execute(&cpu, &memory, inst.TYA_IMP.cycles);
+    params.numCycles = inst.TYA_IMP.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, cpu.A);
 }

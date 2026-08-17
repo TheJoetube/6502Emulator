@@ -5,15 +5,16 @@
 
 Memory memory;
 CPU cpu;
+RunParams params;
 
 void setUp(void)
 {
-    initInstructions();
-
     memory.data[RESVEC_LO] = 0x00;
     memory.data[RESVEC_HI] = 0x00;
 
     reset(&cpu, &memory);
+
+    setDefaultParams(&params);
 }
 
 void tearDown(void)
@@ -27,7 +28,8 @@ void test_ldy_immediate(void)
     memory.data[0] = inst.LDY_IM.opcode;
     memory.data[1] = checkValue;
 
-    execute(&cpu, &memory, inst.LDY_IM.cycles);
+    params.numCycles = inst.LDY_IM.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, cpu.Y);
 }
@@ -39,7 +41,8 @@ void test_ldy_zeropage(void) {
     memory.data[1] = 0x0F;
     memory.data[0x000F] = checkValue;
 
-    execute(&cpu, &memory, inst.LDY_ZP.cycles);
+    params.numCycles = inst.LDY_ZP.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, cpu.Y);
 }
@@ -52,7 +55,8 @@ void test_ldy_zeropage_x(void) {
     memory.data[1] = 0x01;
     memory.data[0x0002] = checkValue;
 
-    execute(&cpu, &memory, inst.LDY_ZP_X.cycles);
+    params.numCycles = inst.LDY_ZP_X.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, cpu.Y);
 }
@@ -66,7 +70,8 @@ void test_ldy_absolute(void) {
 
     memory.data[0x1234] = checkValue;
 
-    execute(&cpu, &memory, inst.LDY_ABS.cycles);
+    params.numCycles = inst.LDY_ABS.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, cpu.Y);
 }
@@ -82,7 +87,8 @@ void test_ldy_absolute_x(void) {
 
     memory.data[0x2092] = checkValue;
 
-    execute(&cpu, &memory, inst.LDY_ABS_X.cycles);
+    params.numCycles = inst.LDY_ABS_X.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, cpu.Y);
 }

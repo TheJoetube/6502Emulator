@@ -5,15 +5,16 @@
 
 Memory memory;
 CPU cpu;
+RunParams params;
 
 void setUp(void)
 {
-    initInstructions();
-
     memory.data[RESVEC_LO] = 0x00;
     memory.data[RESVEC_HI] = 0x00;
 
     reset(&cpu, &memory);
+
+    setDefaultParams(&params);
 }
 
 void tearDown(void)
@@ -28,7 +29,8 @@ void test_sta_zeropage(void) {
     memory.data[0] = inst.STA_ZP.opcode;
     memory.data[1] = 0x0F;
 
-    execute(&cpu, &memory, inst.STA_ZP.cycles);
+    params.numCycles = inst.STA_ZP.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, memory.data[0x000F]);
 }
@@ -42,7 +44,8 @@ void test_sta_zeropage_x(void) {
     memory.data[0] = inst.STA_ZP_X.opcode;
     memory.data[1] = 0x0F;
 
-    execute(&cpu, &memory, inst.STA_ZP_X.cycles);
+    params.numCycles = inst.STA_ZP_X.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, memory.data[0x0010]);
 }
@@ -56,7 +59,8 @@ void test_sta_absolute(void) {
     memory.data[1] = 0x02;
     memory.data[2] = 0x10;
 
-    execute(&cpu, &memory, inst.STA_ABS.cycles);
+    params.numCycles = inst.STA_ABS.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, memory.data[0x1002]);
 }
@@ -71,7 +75,8 @@ void test_sta_absolute_x(void) {
     memory.data[1] = 0x02;
     memory.data[2] = 0x10;
 
-    execute(&cpu, &memory, inst.STA_ABS_X.cycles);
+    params.numCycles = inst.STA_ABS_X.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, memory.data[0x1004]);
 }
@@ -86,7 +91,8 @@ void test_sta_absolute_y(void) {
     memory.data[1] = 0x02;
     memory.data[2] = 0x10;
 
-    execute(&cpu, &memory, inst.STA_ABS_Y.cycles);
+    params.numCycles = inst.STA_ABS_Y.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, memory.data[0x1004]);
 }
@@ -100,7 +106,8 @@ void test_sta_indexed_indirect(void) {
     memory.data[0] = inst.STA_IN_X.opcode;
     memory.data[1] = 0x02;
 
-    execute(&cpu, &memory, inst.STA_IN_X.cycles);
+    params.numCycles = inst.STA_IN_X.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, memory.data[0x04]);
 }
@@ -114,7 +121,8 @@ void test_sta_indirect_indexed(void) {
     memory.data[0] = inst.STA_IN_Y.opcode;
     memory.data[1] = 0x02;
 
-    execute(&cpu, &memory, inst.STA_IN_Y.cycles);
+    params.numCycles = inst.STA_IN_Y.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, memory.data[0x04]);
 }

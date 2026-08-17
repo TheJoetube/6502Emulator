@@ -3,8 +3,9 @@
 
 #include "constants.h"
 
-void reset(CPU* cpu, Memory* memory);
+void setDefaultParams(RunParams* params);
+void reset(CPU* cpu, const Memory* memory);
 void printStatus(const CPU* cpu);
-void execute(CPU* cpu, Memory* memory, u32 cycles);
+void execute(CPU* cpu, Memory* memory, RunParams params);
 
 #endif //INC_6502EMULATOR_CPUFUNCTIONS_H

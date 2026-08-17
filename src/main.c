@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <string.h>
-#include "instructionFunctions.h"
 #include "constants.h"
 #include "cpuFunctions.h"
 
-void fillMemory(Memory* memory) {
-    FILE *fp = fopen("res/prg.bin", "rb");
+void fillMemory(const char* fileName, Memory* memory) {
+    FILE *fp = fopen(fileName, "rb");
 
     if (fp == NULL) {
         printf("Error opening file.\n");
@@ -22,16 +21,15 @@ void fillMemory(Memory* memory) {
 }
 
 int main(void) {
-    initInstructions();
     //----------------Init CPU----------------//
     Memory memory;
     CPU cpu;
-    
-    fillMemory(&memory);
+    const RunParams params = {0, True, 1000};
 
+    fillMemory("res/prg.bin", &memory);
     reset(&cpu, &memory);
 
-    //execute(&cpu, &memory, inst.LDA_IM.cycles);
+    execute(&cpu, &memory, params);
 
     return 0;
 }

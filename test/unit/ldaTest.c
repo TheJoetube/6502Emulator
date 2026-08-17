@@ -5,15 +5,16 @@
 
 Memory memory;
 CPU cpu;
+RunParams params;
 
 void setUp(void)
 {
-    initInstructions();
-
     memory.data[RESVEC_LO] = 0x00;
     memory.data[RESVEC_HI] = 0x00;
 
     reset(&cpu, &memory);
+
+    setDefaultParams(&params);
 }
 
 void tearDown(void)
@@ -27,7 +28,8 @@ void test_lda_immediate(void)
     memory.data[0] = inst.LDA_IM.opcode;
     memory.data[1] = checkValue;
 
-    execute(&cpu, &memory, inst.LDA_IM.cycles);
+    params.numCycles = inst.LDA_IM.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, cpu.A);
 }
@@ -39,7 +41,8 @@ void test_lda_zeropage(void) {
     memory.data[1] = 0x0F;
     memory.data[0x000F] = checkValue;
 
-    execute(&cpu, &memory, inst.LDA_ZP.cycles);
+    params.numCycles = inst.LDA_ZP.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, cpu.A);
 }
@@ -52,7 +55,8 @@ void test_lda_zeropage_x(void) {
     memory.data[1] = 0x01;
     memory.data[0x0002] = checkValue;
 
-    execute(&cpu, &memory, inst.LDA_ZP_X.cycles);
+    params.numCycles = inst.LDA_ZP_X.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, cpu.A);
 }
@@ -66,7 +70,8 @@ void test_lda_absolute(void) {
 
     memory.data[0x1234] = checkValue;
 
-    execute(&cpu, &memory, inst.LDA_ABS.cycles);
+    params.numCycles = inst.LDA_ABS.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, cpu.A);
 }
@@ -82,7 +87,8 @@ void test_lda_absolute_x(void) {
 
     memory.data[0x2092] = checkValue;
 
-    execute(&cpu, &memory, inst.LDA_ABS_X.cycles);
+    params.numCycles = inst.LDA_ABS_X.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, cpu.A);
 }
@@ -98,7 +104,8 @@ void test_lda_absolute_y(void) {
 
     memory.data[0x2092] = checkValue;
 
-    execute(&cpu, &memory, inst.LDA_ABS_Y.cycles);
+    params.numCycles = inst.LDA_ABS_Y.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, cpu.A);
 }
@@ -114,7 +121,8 @@ void test_lda_indexed_indirect(void) {
 
     memory.data[0x0060] = checkValue;
 
-    execute(&cpu, &memory, inst.LDA_IN_X.cycles);
+    params.numCycles = inst.LDA_IN_X.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, cpu.A);
 }
@@ -129,7 +137,8 @@ void test_lda_indirect_indexed(void) {
 
     memory.data[0x0060] = checkValue;
 
-    execute(&cpu, &memory, inst.LDA_IN_Y.cycles);
+    params.numCycles = inst.LDA_IN_Y.cycles;
+    execute(&cpu, &memory, params);
 
     TEST_ASSERT_EQUAL_HEX(checkValue, cpu.A);
 }
