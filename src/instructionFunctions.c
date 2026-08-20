@@ -2,6 +2,9 @@
 #include "../include/constants.h"
 #include <stdio.h>
 
+/**
+ * Used for debugging.
+ */
 const char* instNames[256] = {
     // 0x0x
     [0x00] = "BRK_IMP",
@@ -187,6 +190,9 @@ const char* instNames[256] = {
     [0xFE] = "INC_ABS_X"
 };
 
+/**
+ * Initializes all the instructions
+ */
 void initInstructions() {
     //LDA
     inst.LDA_IM = (Instruction){0xA9,2,Immediate,LDA};
@@ -543,7 +549,7 @@ void writeWord(u32* cycles, const Word data, const Word address, Memory *memory)
  * @param data
  * @param memory
  */
-void pushWordToStack(u32* cycles, CPU* cpu, Word data, Memory *memory) {
+void pushWordToStack(u32* cycles, CPU* cpu, const Word data, Memory *memory) {
     writeByte(cycles, data >> 8, STACKSTART + cpu->SP, memory);
     cpu->SP -= 1;
 
@@ -558,7 +564,7 @@ void pushWordToStack(u32* cycles, CPU* cpu, Word data, Memory *memory) {
  * @param data
  * @param memory
  */
-void pushByteToStack(u32* cycles, CPU* cpu, Byte data, Memory *memory) {
+void pushByteToStack(u32* cycles, CPU* cpu, const Byte data, Memory *memory) {
     memory->data[STACKSTART + cpu->SP] = data;
     *cycles -= 1;
     cpu->SP -= 1;
@@ -572,7 +578,7 @@ void pushByteToStack(u32* cycles, CPU* cpu, Byte data, Memory *memory) {
  * @param memory
  * @return
  */
-Byte popByteFromStack(u32* cycles, CPU* cpu, Memory *memory) {
+Byte popByteFromStack(u32* cycles, CPU* cpu, const Memory *memory) {
     cpu->SP += 1;
     *cycles -= 1;
     const Byte value = memory->data[STACKSTART + cpu->SP];
@@ -581,16 +587,15 @@ Byte popByteFromStack(u32* cycles, CPU* cpu, Memory *memory) {
 }
 
 /**
- * Uses 3 Cycles
+ * Uses 4 Cycles
  * @param cycles
  * @param cpu
  * @param memory
  * @return
  */
-Word popWordFromStack(u32* cycles, CPU* cpu, Memory* memory) {
+Word popWordFromStack(u32* cycles, CPU* cpu, const Memory* memory) {
     const Byte low = popByteFromStack(cycles, cpu, memory);
     const Byte high = popByteFromStack(cycles, cpu, memory);
-    *cycles -= 1;
     return ((high << 8) | low);
 }
 
@@ -602,7 +607,7 @@ Word popWordFromStack(u32* cycles, CPU* cpu, Memory* memory) {
  * @param memory
  * @return
  */
-Word readZeroPageAddressX(u32* cycles, CPU* cpu, Byte address, Memory* memory) {
+Word readZeroPageAddressX(u32* cycles, const CPU* cpu, Byte address, const Memory* memory) {
     address += cpu->X;
     *cycles -= 1;
     address &= 0xFF;
@@ -619,7 +624,7 @@ Word readZeroPageAddressX(u32* cycles, CPU* cpu, Byte address, Memory* memory) {
  * @param memory
  * @return
  */
-Word readZeroPageAddressY(u32* cycles, CPU* cpu, const Byte address, Memory* memory) {
+Word readZeroPageAddressY(u32* cycles, const CPU* cpu, const Byte address, const Memory* memory) {
     const Byte low = readByte(cycles, address, memory);
     const Byte high = readByte(cycles, (address + 1) & 0xFF, memory);
     Word finalAddr = (high << 8) | low;
@@ -649,51 +654,51 @@ void LDA(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case ZeroPage: {
-            const Byte zpAddress = fetchByte(cycles, cpu, memory);
-            cpu->A = readByte(cycles, 0x0000 | zpAddress, memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            cpu->A = readByte(cycles, 0x0000 | address, memory);
             break;
         }
 
         case ZeroPage_X: {
-            Byte zpXAddress = fetchByte(cycles, cpu, memory);
-            zpXAddress += cpu->X;
+            Byte address = fetchByte(cycles, cpu, memory);
+            address += cpu->X;
             *cycles -= 1;
-            cpu->A = readByte(cycles, 0x0000 | zpXAddress, memory);
+            cpu->A = readByte(cycles, 0x0000 | address, memory);
             break;
         }
 
         case Absolute: {
-            const Word absAddress = fetchWord(cycles, cpu, memory);
-            cpu->A = readByte(cycles, absAddress, memory);
+            const Word address = fetchWord(cycles, cpu, memory);
+            cpu->A = readByte(cycles, address, memory);
             break;
         }
 
         case Absolute_X: {
             //Implement Page Boundary
-            Word absXAddress = fetchWord(cycles, cpu, memory);
-            absXAddress += cpu->X;
-            cpu->A = readByte(cycles, absXAddress, memory);
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->X;
+            cpu->A = readByte(cycles, address, memory);
             break;
         }
 
         case Absolute_Y: {
             //Implement Page Boundary
-            Word absYAddress = fetchWord(cycles, cpu, memory);
-            absYAddress += cpu->Y;
-            cpu->A = readByte(cycles, absYAddress, memory);
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->Y;
+            cpu->A = readByte(cycles, address, memory);
             break;
         }
 
         case IndexedIndirect: {
-            const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            cpu->A = readByte(cycles, readZeroPageAddressX(cycles, cpu, indirectXAddress, memory), memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            cpu->A = readByte(cycles, readZeroPageAddressX(cycles, cpu, address, memory), memory);
             break;
         }
 
         case IndirectIndexed: {
             //Implement Page Boundary
-            const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
-            cpu->A = readByte(cycles, readZeroPageAddressY(cycles, cpu, indirectYAddress, memory), memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            cpu->A = readByte(cycles, readZeroPageAddressY(cycles, cpu, address, memory), memory);
             break;
         }
 
@@ -714,30 +719,30 @@ void LDX(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case ZeroPage: {
-            const Byte zpAddress = fetchByte(cycles, cpu, memory);
-            cpu->X = readByte(cycles, 0x0000 | zpAddress, memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            cpu->X = readByte(cycles, 0x0000 | address, memory);
             break;
         }
 
         case ZeroPage_Y: {
-            Byte zpAddressY = fetchByte(cycles, cpu, memory);
-            zpAddressY += cpu->Y;
+            Byte address = fetchByte(cycles, cpu, memory);
+            address += cpu->Y;
             *cycles -= 1;
-            cpu->X = readByte(cycles, 0x0000 | zpAddressY, memory);
+            cpu->X = readByte(cycles, 0x0000 | address, memory);
             break;
         }
 
         case Absolute: {
-            const Word absAddress = fetchWord(cycles, cpu, memory);
-            cpu->X = readByte(cycles, absAddress, memory);
+            const Word address = fetchWord(cycles, cpu, memory);
+            cpu->X = readByte(cycles, address, memory);
             break;
         }
 
         case Absolute_Y: {
             //Implement Page Boundary
-            Word absYAddress = fetchWord(cycles, cpu, memory);
-            absYAddress += cpu->Y;
-            cpu->X = readByte(cycles, absYAddress, memory);
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->Y;
+            cpu->X = readByte(cycles, address, memory);
             break;
         }
 
@@ -758,30 +763,30 @@ void LDY(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case ZeroPage: {
-            const Byte zpAddress = fetchByte(cycles, cpu, memory);
-            cpu->Y = readByte(cycles, 0x0000 | zpAddress, memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            cpu->Y = readByte(cycles, 0x0000 | address, memory);
             break;
         }
 
         case ZeroPage_X: {
-            Byte zpXAddress = fetchByte(cycles, cpu, memory);
-            zpXAddress += cpu->X;
+            Byte address = fetchByte(cycles, cpu, memory);
+            address += cpu->X;
             *cycles -= 1;
-            cpu->Y = readByte(cycles, 0x0000 | zpXAddress, memory);
+            cpu->Y = readByte(cycles, 0x0000 | address, memory);
             break;
         }
 
         case Absolute: {
-            const Word absAddress = fetchWord(cycles, cpu, memory);
-            cpu->Y = readByte(cycles, absAddress, memory);
+            const Word address = fetchWord(cycles, cpu, memory);
+            cpu->Y = readByte(cycles, address, memory);
             break;
         }
 
         case Absolute_X: {
             //Implement Page Boundary
-            Word absXAddress = fetchWord(cycles, cpu, memory);
-            absXAddress += cpu->X;
-            cpu->Y = readByte(cycles, absXAddress, memory);
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->X;
+            cpu->Y = readByte(cycles, address, memory);
             break;
         }
 
@@ -797,52 +802,52 @@ void LDY(CPU* cpu, Memory* memory, u32* cycles) {
 void STA(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case ZeroPage: {
-            const Byte zpAddress = fetchByte(cycles, cpu, memory);
-            writeByte(cycles, cpu->A, 0x0000 | zpAddress, memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            writeByte(cycles, cpu->A, 0x0000 | address, memory);
             break;
         }
 
         case ZeroPage_X: {
-            Byte zpXAddress = fetchByte(cycles, cpu, memory);
-            zpXAddress += cpu->X;
+            Byte address = fetchByte(cycles, cpu, memory);
+            address += cpu->X;
             *cycles -= 1;
-            writeByte(cycles, cpu->A, 0x0000 | zpXAddress, memory);
+            writeByte(cycles, cpu->A, 0x0000 | address, memory);
             break;
         }
 
         case Absolute: {
-            const Word absAddress = fetchWord(cycles, cpu, memory);
-            writeByte(cycles, cpu->A, absAddress, memory);
-            break;
-        }
-
-        case Absolute_X: {
-            Word absXAddress = fetchWord(cycles, cpu, memory);
-            absXAddress += cpu->X;
-            *cycles -= 1;
-            writeByte(cycles, cpu->A, absXAddress, memory);
-            break;
-        }
-
-        case Absolute_Y: {
-            Word absYAddress = fetchWord(cycles, cpu, memory);
-            absYAddress += cpu->Y;
-            *cycles -= 1;
-            writeByte(cycles, cpu->A, absYAddress, memory);
-            break;
-        }
-
-        case IndexedIndirect: {
-            const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            const Word address = readZeroPageAddressX(cycles, cpu, indirectXAddress, memory);
+            const Word address = fetchWord(cycles, cpu, memory);
             writeByte(cycles, cpu->A, address, memory);
             break;
         }
 
-        case IndirectIndexed: {
-            const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
+        case Absolute_X: {
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->X;
             *cycles -= 1;
-            const Word addressY = readZeroPageAddressY(cycles, cpu, indirectYAddress, memory);
+            writeByte(cycles, cpu->A, address, memory);
+            break;
+        }
+
+        case Absolute_Y: {
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->Y;
+            *cycles -= 1;
+            writeByte(cycles, cpu->A, address, memory);
+            break;
+        }
+
+        case IndexedIndirect: {
+            const Byte address = fetchByte(cycles, cpu, memory);
+            const Word addressX = readZeroPageAddressX(cycles, cpu, address, memory);
+            writeByte(cycles, cpu->A, addressX, memory);
+            break;
+        }
+
+        case IndirectIndexed: {
+            const Byte address = fetchByte(cycles, cpu, memory);
+            *cycles -= 1;
+            const Word addressY = readZeroPageAddressY(cycles, cpu, address, memory);
             writeByte(cycles, cpu->A, addressY, memory);
             break;
         }
@@ -857,22 +862,22 @@ void STA(CPU* cpu, Memory* memory, u32* cycles) {
 void STX(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case ZeroPage: {
-            const Byte zpAddress = fetchByte(cycles, cpu, memory);
-            writeByte(cycles, cpu->X, 0x0000 | zpAddress, memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            writeByte(cycles, cpu->X, 0x0000 | address, memory);
             break;
         }
 
         case ZeroPage_Y: {
-            Byte zpYAddress = fetchByte(cycles, cpu, memory);
-            zpYAddress += cpu->Y;
+            Byte address = fetchByte(cycles, cpu, memory);
+            address += cpu->Y;
             *cycles -= 1;
-            writeByte(cycles, cpu->X, 0x0000 | zpYAddress, memory);
+            writeByte(cycles, cpu->X, 0x0000 | address, memory);
             break;
         }
 
         case Absolute: {
-            const Word absAddress = fetchWord(cycles, cpu, memory);
-            writeByte(cycles, cpu->X, absAddress, memory);
+            const Word address = fetchWord(cycles, cpu, memory);
+            writeByte(cycles, cpu->X, address, memory);
             break;
         }
 
@@ -886,22 +891,22 @@ void STX(CPU* cpu, Memory* memory, u32* cycles) {
 void STY(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case ZeroPage: {
-            const Byte zpAddress = fetchByte(cycles, cpu, memory);
-            writeByte(cycles, cpu->Y, 0x0000 | zpAddress, memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            writeByte(cycles, cpu->Y, 0x0000 | address, memory);
             break;
         }
 
         case ZeroPage_X: {
-            Byte zpXAddress = fetchByte(cycles, cpu, memory);
-            zpXAddress += cpu->X;
+            Byte address = fetchByte(cycles, cpu, memory);
+            address += cpu->X;
             *cycles -= 1;
-            writeByte(cycles, cpu->Y, 0x0000 | zpXAddress, memory);
+            writeByte(cycles, cpu->Y, 0x0000 | address, memory);
             break;
         }
 
         case Absolute: {
-            const Word absAddress = fetchWord(cycles, cpu, memory);
-            writeByte(cycles, cpu->Y, absAddress, memory);
+            const Word address = fetchWord(cycles, cpu, memory);
+            writeByte(cycles, cpu->Y, address, memory);
             break;
         }
 
@@ -1085,51 +1090,51 @@ void AND(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case ZeroPage: {
-            const Byte zpAddress = fetchByte(cycles, cpu, memory);
-            cpu->A &= readByte(cycles, 0x0000 | zpAddress, memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            cpu->A &= readByte(cycles, 0x0000 | address, memory);
             break;
         }
 
         case ZeroPage_X: {
-            Byte zpXAddress = fetchByte(cycles, cpu, memory);
-            zpXAddress += cpu->X;
+            Byte address = fetchByte(cycles, cpu, memory);
+            address += cpu->X;
             *cycles -= 1;
-            cpu->A &= readByte(cycles, 0x0000 | zpXAddress, memory);
+            cpu->A &= readByte(cycles, 0x0000 | address, memory);
             break;
         }
 
         case Absolute: {
-            const Word absAddress = fetchWord(cycles, cpu, memory);
-            cpu->A &= readByte(cycles, absAddress, memory);
+            const Word address = fetchWord(cycles, cpu, memory);
+            cpu->A &= readByte(cycles, address, memory);
             break;
         }
 
         case Absolute_X: {
             //Implement Page Boundary
-            Word absXAddress = fetchWord(cycles, cpu, memory);
-            absXAddress += cpu->X;
-            cpu->A &= readByte(cycles, absXAddress, memory);
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->X;
+            cpu->A &= readByte(cycles, address, memory);
             break;
         }
 
         case Absolute_Y: {
             //Implement Page Boundary
-            Word absYAddress = fetchWord(cycles, cpu, memory);
-            absYAddress += cpu->Y;
-            cpu->A &= readByte(cycles, absYAddress, memory);
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->Y;
+            cpu->A &= readByte(cycles, address, memory);
             break;
         }
 
         case IndexedIndirect: {
-            const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            cpu->A &= readByte(cycles, readZeroPageAddressX(cycles, cpu, indirectXAddress, memory), memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            cpu->A &= readByte(cycles, readZeroPageAddressX(cycles, cpu, address, memory), memory);
             break;
         }
 
         case IndirectIndexed: {
             //Implement Page Boundary
-            const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
-            cpu->A &= readByte(cycles, readZeroPageAddressY(cycles, cpu, indirectYAddress, memory), memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            cpu->A &= readByte(cycles, readZeroPageAddressY(cycles, cpu, address, memory), memory);
             break;
         }
 
@@ -1150,51 +1155,51 @@ void EOR(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case ZeroPage: {
-            const Byte zpAddress = fetchByte(cycles, cpu, memory);
-            cpu->A ^= readByte(cycles, 0x0000 | zpAddress, memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            cpu->A ^= readByte(cycles, 0x0000 | address, memory);
             break;
         }
 
         case ZeroPage_X: {
-            Byte zpXAddress = fetchByte(cycles, cpu, memory);
-            zpXAddress += cpu->X;
+            Byte address = fetchByte(cycles, cpu, memory);
+            address += cpu->X;
             *cycles -= 1;
-            cpu->A ^= readByte(cycles, 0x0000 | zpXAddress, memory);
+            cpu->A ^= readByte(cycles, 0x0000 | address, memory);
             break;
         }
 
         case Absolute: {
-            const Word absAddress = fetchWord(cycles, cpu, memory);
-            cpu->A ^= readByte(cycles, absAddress, memory);
+            const Word address = fetchWord(cycles, cpu, memory);
+            cpu->A ^= readByte(cycles, address, memory);
             break;
         }
 
         case Absolute_X: {
             //Implement Page Boundary
-            Word absXAddress = fetchWord(cycles, cpu, memory);
-            absXAddress += cpu->X;
-            cpu->A ^= readByte(cycles, absXAddress, memory);
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->X;
+            cpu->A ^= readByte(cycles, address, memory);
             break;
         }
 
         case Absolute_Y: {
             //Implement Page Boundary
-            Word absYAddress = fetchWord(cycles, cpu, memory);
-            absYAddress += cpu->Y;
-            cpu->A ^= readByte(cycles, absYAddress, memory);
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->Y;
+            cpu->A ^= readByte(cycles, address, memory);
             break;
         }
 
         case IndexedIndirect: {
-            const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            cpu->A ^= readByte(cycles, readZeroPageAddressX(cycles, cpu, indirectXAddress, memory), memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            cpu->A ^= readByte(cycles, readZeroPageAddressX(cycles, cpu, address, memory), memory);
             break;
         }
 
         case IndirectIndexed: {
             //Implement Page Boundary
-            const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
-            cpu->A ^= readByte(cycles, readZeroPageAddressY(cycles, cpu, indirectYAddress, memory), memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            cpu->A ^= readByte(cycles, readZeroPageAddressY(cycles, cpu, address, memory), memory);
             break;
         }
 
@@ -1215,51 +1220,51 @@ void ORA(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case ZeroPage: {
-            const Byte zpAddress = fetchByte(cycles, cpu, memory);
-            cpu->A |= readByte(cycles, 0x0000 | zpAddress, memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            cpu->A |= readByte(cycles, 0x0000 | address, memory);
             break;
         }
 
         case ZeroPage_X: {
-            Byte zpXAddress = fetchByte(cycles, cpu, memory);
-            zpXAddress += cpu->X;
+            Byte address = fetchByte(cycles, cpu, memory);
+            address += cpu->X;
             *cycles -= 1;
-            cpu->A |= readByte(cycles, 0x0000 | zpXAddress, memory);
+            cpu->A |= readByte(cycles, 0x0000 | address, memory);
             break;
         }
 
         case Absolute: {
-            const Word absAddress = fetchWord(cycles, cpu, memory);
-            cpu->A |= readByte(cycles, absAddress, memory);
+            const Word address = fetchWord(cycles, cpu, memory);
+            cpu->A |= readByte(cycles, address, memory);
             break;
         }
 
         case Absolute_X: {
             //Implement Page Boundary
-            Word absXAddress = fetchWord(cycles, cpu, memory);
-            absXAddress += cpu->X;
-            cpu->A |= readByte(cycles, absXAddress, memory);
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->X;
+            cpu->A |= readByte(cycles, address, memory);
             break;
         }
 
         case Absolute_Y: {
             //Implement Page Boundary
-            Word absYAddress = fetchWord(cycles, cpu, memory);
-            absYAddress += cpu->Y;
-            cpu->A |= readByte(cycles, absYAddress, memory);
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->Y;
+            cpu->A |= readByte(cycles, address, memory);
             break;
         }
 
         case IndexedIndirect: {
-            const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            cpu->A |= readByte(cycles, readZeroPageAddressX(cycles, cpu, indirectXAddress, memory), memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            cpu->A |= readByte(cycles, readZeroPageAddressX(cycles, cpu, address, memory), memory);
             break;
         }
 
         case IndirectIndexed: {
             //Implement Page Boundary
-            const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
-            cpu->A |= readByte(cycles, readZeroPageAddressY(cycles, cpu, indirectYAddress, memory), memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            cpu->A |= readByte(cycles, readZeroPageAddressY(cycles, cpu, address, memory), memory);
             break;
         }
 
@@ -1278,14 +1283,14 @@ void BIT(CPU* cpu, Memory* memory, u32* cycles) {
 
     switch (cpu->mode) {
         case ZeroPage: {
-            const Byte zpAddress = fetchByte(cycles, cpu, memory);
-            memVal = readByte(cycles, 0x0000 | zpAddress, memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, 0x0000 | address, memory);
             break;
         }
 
         case Absolute: {
-            const Word absAddress = fetchWord(cycles, cpu, memory);
-            memVal = readByte(cycles, absAddress, memory);
+            const Word address = fetchWord(cycles, cpu, memory);
+            memVal = readByte(cycles, address, memory);
             break;
         }
 
@@ -1311,51 +1316,51 @@ void ADC(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case ZeroPage: {
-            const Byte zpAddress = fetchByte(cycles, cpu, memory);
-            memVal = readByte(cycles, 0x0000 | zpAddress, memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, 0x0000 | address, memory);
             break;
         }
 
         case ZeroPage_X: {
-            Byte zpXAddress = fetchByte(cycles, cpu, memory);
-            zpXAddress += cpu->X;
+            Byte address = fetchByte(cycles, cpu, memory);
+            address += cpu->X;
             *cycles -= 1;
-            memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
+            memVal = readByte(cycles, 0x0000 | address, memory);
             break;
         }
 
         case Absolute: {
-            const Word absAddress = fetchWord(cycles, cpu, memory);
-            memVal = readByte(cycles, absAddress, memory);
+            const Word address = fetchWord(cycles, cpu, memory);
+            memVal = readByte(cycles, address, memory);
             break;
         }
 
         case Absolute_X: {
             //Implement Page Boundary
-            Word absXAddress = fetchWord(cycles, cpu, memory);
-            absXAddress += cpu->X;
-            memVal = readByte(cycles, absXAddress, memory);
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->X;
+            memVal = readByte(cycles, address, memory);
             break;
         }
 
         case Absolute_Y: {
             //Implement Page Boundary
-            Word absYAddress = fetchWord(cycles, cpu, memory);
-            absYAddress += cpu->Y;
-            memVal = readByte(cycles, absYAddress, memory);
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->Y;
+            memVal = readByte(cycles, address, memory);
             break;
         }
 
         case IndexedIndirect: {
-            const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            memVal = readByte(cycles, readZeroPageAddressX(cycles, cpu, indirectXAddress, memory), memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, readZeroPageAddressX(cycles, cpu, address, memory), memory);
             break;
         }
 
         case IndirectIndexed: {
             //Implement Page Boundary
-            const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
-            memVal = readByte(cycles, readZeroPageAddressY(cycles, cpu, indirectYAddress, memory), memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, readZeroPageAddressY(cycles, cpu, address, memory), memory);
             break;
         }
 
@@ -1416,51 +1421,51 @@ void SBC(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case ZeroPage: {
-            const Byte zpAddress = fetchByte(cycles, cpu, memory);
-            memVal = readByte(cycles, 0x0000 | zpAddress, memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, 0x0000 | address, memory);
             break;
         }
 
         case ZeroPage_X: {
-            Byte zpXAddress = fetchByte(cycles, cpu, memory);
-            zpXAddress += cpu->X;
+            Byte address = fetchByte(cycles, cpu, memory);
+            address += cpu->X;
             *cycles -= 1;
-            memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
+            memVal = readByte(cycles, 0x0000 | address, memory);
             break;
         }
 
         case Absolute: {
-            const Word absAddress = fetchWord(cycles, cpu, memory);
-            memVal = readByte(cycles, absAddress, memory);
+            const Word address = fetchWord(cycles, cpu, memory);
+            memVal = readByte(cycles, address, memory);
             break;
         }
 
         case Absolute_X: {
             //Implement Page Boundary
-            Word absXAddress = fetchWord(cycles, cpu, memory);
-            absXAddress += cpu->X;
-            memVal = readByte(cycles, absXAddress, memory);
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->X;
+            memVal = readByte(cycles, address, memory);
             break;
         }
 
         case Absolute_Y: {
             //Implement Page Boundary
-            Word absYAddress = fetchWord(cycles, cpu, memory);
-            absYAddress += cpu->Y;
-            memVal = readByte(cycles, absYAddress, memory);
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->Y;
+            memVal = readByte(cycles, address, memory);
             break;
         }
 
         case IndexedIndirect: {
-            const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            memVal = readByte(cycles, readZeroPageAddressX(cycles, cpu, indirectXAddress, memory), memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, readZeroPageAddressX(cycles, cpu, address, memory), memory);
             break;
         }
 
         case IndirectIndexed: {
             //Implement Page Boundary
-            const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
-            memVal = readByte(cycles, readZeroPageAddressY(cycles, cpu, indirectYAddress, memory), memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, readZeroPageAddressY(cycles, cpu, address, memory), memory);
             break;
         }
 
@@ -1532,51 +1537,51 @@ void CMP(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case ZeroPage: {
-            const Byte zpAddress = fetchByte(cycles, cpu, memory);
-            memVal = readByte(cycles, 0x0000 | zpAddress, memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, 0x0000 | address, memory);
             break;
         }
 
         case ZeroPage_X: {
-            Byte zpXAddress = fetchByte(cycles, cpu, memory);
-            zpXAddress += cpu->X;
+            Byte address = fetchByte(cycles, cpu, memory);
+            address += cpu->X;
             *cycles -= 1;
-            memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
+            memVal = readByte(cycles, 0x0000 | address, memory);
             break;
         }
 
         case Absolute: {
-            const Word absAddress = fetchWord(cycles, cpu, memory);
-            memVal = readByte(cycles, absAddress, memory);
+            const Word address = fetchWord(cycles, cpu, memory);
+            memVal = readByte(cycles, address, memory);
             break;
         }
 
         case Absolute_X: {
             //Implement Page Boundary
-            Word absXAddress = fetchWord(cycles, cpu, memory);
-            absXAddress += cpu->X;
-            memVal = readByte(cycles, absXAddress, memory);
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->X;
+            memVal = readByte(cycles, address, memory);
             break;
         }
 
         case Absolute_Y: {
             //Implement Page Boundary
-            Word absYAddress = fetchWord(cycles, cpu, memory);
-            absYAddress += cpu->Y;
-            memVal = readByte(cycles, absYAddress, memory);
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->Y;
+            memVal = readByte(cycles, address, memory);
             break;
         }
 
         case IndexedIndirect: {
-            const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            memVal = readByte(cycles, readZeroPageAddressX(cycles, cpu, indirectXAddress, memory), memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, readZeroPageAddressX(cycles, cpu, address, memory), memory);
             break;
         }
 
         case IndirectIndexed: {
             //Implement Page Boundary
-            const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
-            memVal = readByte(cycles, readZeroPageAddressY(cycles, cpu, indirectYAddress, memory), memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, readZeroPageAddressY(cycles, cpu, address, memory), memory);
             break;
         }
 
@@ -1600,14 +1605,14 @@ void CPX(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case ZeroPage: {
-            const Byte zpAddress = fetchByte(cycles, cpu, memory);
-            memVal = readByte(cycles, 0x0000 | zpAddress, memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, 0x0000 | address, memory);
             break;
         }
 
         case Absolute: {
-            const Word absAddress = fetchWord(cycles, cpu, memory);
-            memVal = readByte(cycles, absAddress, memory);
+            const Word address = fetchWord(cycles, cpu, memory);
+            memVal = readByte(cycles, address, memory);
             break;
         }
 
@@ -1631,14 +1636,14 @@ void CPY(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case ZeroPage: {
-            const Byte zpAddress = fetchByte(cycles, cpu, memory);
-            memVal = readByte(cycles, 0x0000 | zpAddress, memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, 0x0000 | address, memory);
             break;
         }
 
         case Absolute: {
-            const Word absAddress = fetchWord(cycles, cpu, memory);
-            memVal = readByte(cycles, absAddress, memory);
+            const Word address = fetchWord(cycles, cpu, memory);
+            memVal = readByte(cycles, address, memory);
             break;
         }
 
@@ -1656,42 +1661,42 @@ void INC(CPU* cpu, Memory* memory, u32* cycles) {
     Byte memVal = 0x00;
     switch (cpu->mode) {
         case ZeroPage: {
-            const Byte zpAddress = fetchByte(cycles, cpu, memory);
-            memVal = readByte(cycles, 0x0000 | zpAddress, memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, 0x0000 | address, memory);
             memVal += 1;
             *cycles -= 1;
-            writeByte(cycles, memVal, 0x0000 | zpAddress, memory);
+            writeByte(cycles, memVal, 0x0000 | address, memory);
             break;
         }
 
         case ZeroPage_X: {
-            Byte zpXAddress = fetchByte(cycles, cpu, memory);
-            zpXAddress += cpu->X;
+            Byte address = fetchByte(cycles, cpu, memory);
+            address += cpu->X;
             *cycles -= 1;
-            memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
+            memVal = readByte(cycles, 0x0000 | address, memory);
             memVal += 1;
             *cycles -= 1;
-            writeByte(cycles, memVal, 0x0000 | zpXAddress, memory);
+            writeByte(cycles, memVal, 0x0000 | address, memory);
             break;
         }
 
         case Absolute: {
-            const Word absAddress = fetchWord(cycles, cpu, memory);
-            memVal = readByte(cycles, absAddress, memory);
+            const Word address = fetchWord(cycles, cpu, memory);
+            memVal = readByte(cycles, address, memory);
             memVal += 1;
             *cycles -= 1;
-            writeByte(cycles, memVal, absAddress, memory);
+            writeByte(cycles, memVal, address, memory);
             break;
         }
 
         case Absolute_X: {
-            Word absXAddress = fetchWord(cycles, cpu, memory);
-            absXAddress += cpu->X;
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->X;
             *cycles -= 1;
-            memVal = readByte(cycles, absXAddress, memory);
+            memVal = readByte(cycles, address, memory);
             memVal += 1;
             *cycles -= 1;
-            writeByte(cycles, memVal, absXAddress, memory);
+            writeByte(cycles, memVal, address, memory);
             break;
         }
 
@@ -1742,42 +1747,42 @@ void DEC(CPU* cpu, Memory* memory, u32* cycles) {
     Byte memVal = 0x00;
     switch (cpu->mode) {
         case ZeroPage: {
-            const Byte zpAddress = fetchByte(cycles, cpu, memory);
-            memVal = readByte(cycles, 0x0000 | zpAddress, memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, 0x0000 | address, memory);
             memVal -= 1;
             *cycles -= 1;
-            writeByte(cycles, memVal, 0x0000 | zpAddress, memory);
+            writeByte(cycles, memVal, 0x0000 | address, memory);
             break;
         }
 
         case ZeroPage_X: {
-            Byte zpXAddress = fetchByte(cycles, cpu, memory);
-            zpXAddress += cpu->X;
+            Byte address = fetchByte(cycles, cpu, memory);
+            address += cpu->X;
             *cycles -= 1;
-            memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
+            memVal = readByte(cycles, 0x0000 | address, memory);
             memVal -= 1;
             *cycles -= 1;
-            writeByte(cycles, memVal, 0x0000 | zpXAddress, memory);
+            writeByte(cycles, memVal, 0x0000 | address, memory);
             break;
         }
 
         case Absolute: {
-            const Word absAddress = fetchWord(cycles, cpu, memory);
-            memVal = readByte(cycles, absAddress, memory);
+            const Word address = fetchWord(cycles, cpu, memory);
+            memVal = readByte(cycles, address, memory);
             memVal -= 1;
             *cycles -= 1;
-            writeByte(cycles, memVal, absAddress, memory);
+            writeByte(cycles, memVal, address, memory);
             break;
         }
 
         case Absolute_X: {
-            Word absXAddress = fetchWord(cycles, cpu, memory);
-            absXAddress += cpu->X;
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->X;
             *cycles -= 1;
-            memVal = readByte(cycles, absXAddress, memory);
+            memVal = readByte(cycles, address, memory);
             memVal -= 1;
             *cycles -= 1;
-            writeByte(cycles, memVal, absXAddress, memory);
+            writeByte(cycles, memVal, address, memory);
             break;
         }
 
@@ -1840,46 +1845,46 @@ void ASL(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case ZeroPage: {
-            const Byte zpAddress = fetchByte(cycles, cpu, memory);
-            memVal = readByte(cycles, 0x0000 | zpAddress, memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, 0x0000 | address, memory);
             oldVal = memVal;
             memVal = memVal << 1;
             *cycles -= 1;
-            writeByte(cycles, memVal, 0x0000 | zpAddress, memory);
+            writeByte(cycles, memVal, 0x0000 | address, memory);
             break;
         }
 
         case ZeroPage_X: {
-            Byte zpXAddress = fetchByte(cycles, cpu, memory);
-            zpXAddress += cpu->X;
+            Byte address = fetchByte(cycles, cpu, memory);
+            address += cpu->X;
             *cycles -= 1;
-            memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
+            memVal = readByte(cycles, 0x0000 | address, memory);
             oldVal = memVal;
             memVal = memVal << 1;
             *cycles -= 1;
-            writeByte(cycles, memVal, 0x0000 | zpXAddress, memory);
+            writeByte(cycles, memVal, 0x0000 | address, memory);
             break;
         }
 
         case Absolute: {
-            const Word absAddress = fetchWord(cycles, cpu, memory);
-            memVal = readByte(cycles, absAddress, memory);
+            const Word address = fetchWord(cycles, cpu, memory);
+            memVal = readByte(cycles, address, memory);
             oldVal = memVal;
             memVal = memVal << 1;
             *cycles -= 1;
-            writeByte(cycles, memVal, absAddress, memory);
+            writeByte(cycles, memVal, address, memory);
             break;
         }
 
         case Absolute_X: {
-            Word absXAddress = fetchWord(cycles, cpu, memory);
-            absXAddress += cpu->X;
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->X;
             *cycles -= 1;
-            memVal = readByte(cycles, absXAddress, memory);
+            memVal = readByte(cycles, address, memory);
             oldVal = memVal;
             memVal = memVal << 1;
             *cycles -= 1;
-            writeByte(cycles, memVal, absXAddress, memory);
+            writeByte(cycles, memVal, address, memory);
             break;
         }
 
@@ -1913,46 +1918,46 @@ void LSR(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case ZeroPage: {
-            const Byte zpAddress = fetchByte(cycles, cpu, memory);
-            memVal = readByte(cycles, 0x0000 | zpAddress, memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, 0x0000 | address, memory);
             oldVal = memVal;
             memVal = memVal >> 1;
             *cycles -= 1;
-            writeByte(cycles, memVal, 0x0000 | zpAddress, memory);
+            writeByte(cycles, memVal, 0x0000 | address, memory);
             break;
         }
 
         case ZeroPage_X: {
-            Byte zpXAddress = fetchByte(cycles, cpu, memory);
-            zpXAddress += cpu->X;
+            Byte address = fetchByte(cycles, cpu, memory);
+            address += cpu->X;
             *cycles -= 1;
-            memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
+            memVal = readByte(cycles, 0x0000 | address, memory);
             oldVal = memVal;
             memVal = memVal >> 1;
             *cycles -= 1;
-            writeByte(cycles, memVal, 0x0000 | zpXAddress, memory);
+            writeByte(cycles, memVal, 0x0000 | address, memory);
             break;
         }
 
         case Absolute: {
-            const Word absAddress = fetchWord(cycles, cpu, memory);
-            memVal = readByte(cycles, absAddress, memory);
+            const Word address = fetchWord(cycles, cpu, memory);
+            memVal = readByte(cycles, address, memory);
             oldVal = memVal;
             memVal = memVal >> 1;
             *cycles -= 1;
-            writeByte(cycles, memVal, absAddress, memory);
+            writeByte(cycles, memVal, address, memory);
             break;
         }
 
         case Absolute_X: {
-            Word absXAddress = fetchWord(cycles, cpu, memory);
-            absXAddress += cpu->X;
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->X;
             *cycles -= 1;
-            memVal = readByte(cycles, absXAddress, memory);
+            memVal = readByte(cycles, address, memory);
             oldVal = memVal;
             memVal = memVal >> 1;
             *cycles -= 1;
-            writeByte(cycles, memVal, absXAddress, memory);
+            writeByte(cycles, memVal, address, memory);
             break;
         }
 
@@ -1989,50 +1994,50 @@ void ROL(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case ZeroPage: {
-            const Byte zpAddress = fetchByte(cycles, cpu, memory);
-            memVal = readByte(cycles, 0x0000 | zpAddress, memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, 0x0000 | address, memory);
             oldVal = memVal;
             memVal = memVal << 1;
             memVal |= newBit0;
             *cycles -= 1;
-            writeByte(cycles, memVal, 0x0000 | zpAddress, memory);
+            writeByte(cycles, memVal, 0x0000 | address, memory);
             break;
         }
 
         case ZeroPage_X: {
-            Byte zpXAddress = fetchByte(cycles, cpu, memory);
-            zpXAddress += cpu->X;
+            Byte address = fetchByte(cycles, cpu, memory);
+            address += cpu->X;
             *cycles -= 1;
-            memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
+            memVal = readByte(cycles, 0x0000 | address, memory);
             oldVal = memVal;
             memVal = memVal << 1;
             memVal |= newBit0;
             *cycles -= 1;
-            writeByte(cycles, memVal, 0x0000 | zpXAddress, memory);
+            writeByte(cycles, memVal, 0x0000 | address, memory);
             break;
         }
 
         case Absolute: {
-            const Word absAddress = fetchWord(cycles, cpu, memory);
-            memVal = readByte(cycles, absAddress, memory);
+            const Word address = fetchWord(cycles, cpu, memory);
+            memVal = readByte(cycles, address, memory);
             oldVal = memVal;
             memVal = memVal << 1;
             memVal |= newBit0;
             *cycles -= 1;
-            writeByte(cycles, memVal, absAddress, memory);
+            writeByte(cycles, memVal, address, memory);
             break;
         }
 
         case Absolute_X: {
-            Word absXAddress = fetchWord(cycles, cpu, memory);
-            absXAddress += cpu->X;
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->X;
             *cycles -= 1;
-            memVal = readByte(cycles, absXAddress, memory);
+            memVal = readByte(cycles, address, memory);
             oldVal = memVal;
             memVal = memVal << 1;
             memVal |= newBit0;
             *cycles -= 1;
-            writeByte(cycles, memVal, absXAddress, memory);
+            writeByte(cycles, memVal, address, memory);
             break;
         }
 
@@ -2069,58 +2074,58 @@ void ROR(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case ZeroPage: {
-            const Byte zpAddress = fetchByte(cycles, cpu, memory);
-            memVal = readByte(cycles, 0x0000 | zpAddress, memory);
+            const Byte address = fetchByte(cycles, cpu, memory);
+            memVal = readByte(cycles, 0x0000 | address, memory);
             oldBit0 = (memVal & 0b00000001) > 0;
             memVal = memVal >> 1;
             if (cpu->status.C) {
                 memVal |= NEGATIVEBITMASK;
             }
             *cycles -= 1;
-            writeByte(cycles, memVal, 0x0000 | zpAddress, memory);
+            writeByte(cycles, memVal, 0x0000 | address, memory);
             break;
         }
 
         case ZeroPage_X: {
-            Byte zpXAddress = fetchByte(cycles, cpu, memory);
-            zpXAddress += cpu->X;
+            Byte address = fetchByte(cycles, cpu, memory);
+            address += cpu->X;
             *cycles -= 1;
-            memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
+            memVal = readByte(cycles, 0x0000 | address, memory);
             oldBit0 = (memVal & 0b00000001) > 0;
             memVal = memVal >> 1;
             if (cpu->status.C) {
                 memVal |= NEGATIVEBITMASK;
             }
             *cycles -= 1;
-            writeByte(cycles, memVal, 0x0000 | zpXAddress, memory);
+            writeByte(cycles, memVal, 0x0000 | address, memory);
             break;
         }
 
         case Absolute: {
-            const Word absAddress = fetchWord(cycles, cpu, memory);
-            memVal = readByte(cycles, absAddress, memory);
+            const Word address = fetchWord(cycles, cpu, memory);
+            memVal = readByte(cycles, address, memory);
             oldBit0 = (memVal & 0b00000001) > 0;
             memVal = memVal >> 1;
             if (cpu->status.C) {
                 memVal |= NEGATIVEBITMASK;
             }
             *cycles -= 1;
-            writeByte(cycles, memVal, absAddress, memory);
+            writeByte(cycles, memVal, address, memory);
             break;
         }
 
         case Absolute_X: {
-            Word absXAddress = fetchWord(cycles, cpu, memory);
-            absXAddress += cpu->X;
+            Word address = fetchWord(cycles, cpu, memory);
+            address += cpu->X;
             *cycles -= 1;
-            memVal = readByte(cycles, absXAddress, memory);
+            memVal = readByte(cycles, address, memory);
             oldBit0 = (memVal & 0b00000001) > 0;
             memVal = memVal >> 1;
             if (cpu->status.C) {
                 memVal |= NEGATIVEBITMASK;
             }
             *cycles -= 1;
-            writeByte(cycles, memVal, absXAddress, memory);
+            writeByte(cycles, memVal, address, memory);
             break;
         }
 
@@ -2183,7 +2188,7 @@ void RTS(CPU* cpu, Memory* memory, u32* cycles) {
         case Implicit: {
             const Word returnAddress = popWordFromStack(cycles, cpu, memory);
             cpu->PC = returnAddress + 1;
-            *cycles -= 2;
+            *cycles -= 1;
             break;
         }
 
@@ -2476,6 +2481,8 @@ void RTI(CPU* cpu, Memory* memory, u32* cycles) {
             cpu->status.value = processorFlags;
             const Word pcValue = popWordFromStack(cycles, cpu, memory);
             cpu->PC = pcValue;
+            //very bad bandaid fix but what can you do
+            *cycles += 1;
             break;
         }
 

@@ -281,15 +281,16 @@ Byte fetchByte(u32 *cycles, CPU *cpu, const Memory *memory);
 Byte readByte(u32* cycles, Word address, const Memory* memory);
 void writeByte(u32* cycles, Byte data, Word address, Memory* memory);
 void pushByteToStack(u32* cycles, CPU* cpu, Byte data, Memory *memory);
-Byte popByteFromStack(u32* cycles, CPU* cpu, Memory *memory);
+Byte popByteFromStack(u32* cycles, CPU* cpu, const Memory *memory);
 
 Word fetchWord(u32* cycles, CPU *cpu, const Memory *memory);
 Word readWord(u32* cycles, Word address, const Memory* memory);
 void writeWord(u32* cycles, Word data, Word address, Memory *memory);
 void pushWordToStack(u32* cycles, CPU* cpu, Word data, Memory *memory);
-Word popWordFromStack(u32* cycles, CPU* cpu, Memory *memory);
+Word popWordFromStack(u32* cycles, CPU* cpu, const Memory *memory);
 
-Word wrapWord(Word value);
+Word readZeroPageAddressX(u32* cycles, const CPU* cpu, Byte address, const Memory* memory);
+Word readZeroPageAddressY(u32* cycles, const CPU* cpu, Byte address, const Memory* memory);
 
 //--Load/Store-Operations--//
 void LDA(CPU* cpu, Memory* memory, u32* cycles);
