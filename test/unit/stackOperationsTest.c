@@ -79,6 +79,7 @@ void test_pla_imp(void) {
     const Byte checkValue = 0x10;
 
     memory.data[STACKSTART + cpu.SP] = checkValue;
+    cpu.SP -= 1;
 
     memory.data[0] = inst.PLA_IMP.opcode;
 
@@ -89,9 +90,12 @@ void test_pla_imp(void) {
 }
 
 void test_plp_imp(void) {
-    const Byte checkValue = 0b0110111;
+    const Byte checkValue = 0b01100110;
 
+    cpu.status.value = checkValue;
     memory.data[STACKSTART + cpu.SP] = checkValue;
+    cpu.SP -= 1;
+    cpu.status.value = 0;
 
     memory.data[0] = inst.PLP_IMP.opcode;
 

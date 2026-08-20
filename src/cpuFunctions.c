@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "cpuFunctions.h"
 #include "instructionFunctions.h"
+
 #ifdef _WIN32
 #include <Windows.h>
 #else
@@ -32,21 +33,22 @@ void reset(CPU* cpu, const Memory* memory) {
  * @param cpu A pointer to a CPU struct
  */
 void printStatus(const CPU* cpu) {
-    printf("A: 0x%02x\nX: 0x%02x\nY: 0x%02x\n", cpu->A, cpu->X, cpu->Y);
-    printf("PC: 0x%04x\nSP: 0x%02x\n", cpu->PC, cpu->SP);
-    printf("Mode: %d\n", cpu->mode);
-    printf("Status: 0b");
-    printf("%d", cpu->status.C);
-    printf("%d", cpu->status.Z);
-    printf("%d", cpu->status.I);
-    printf("%d", cpu->status.D);
-    printf("%d", cpu->status.B);
-    printf("%d", cpu->status.V);
-    printf("%d\n", cpu->status.N);
+    fprintf(stderr,"A: 0x%02x X: 0x%02x Y: 0x%02x ", cpu->A, cpu->X, cpu->Y);
+    fprintf(stderr,"PC: 0x%04x SP: 0x%02x ", cpu->PC, cpu->SP);
+    fprintf(stderr,"Mode: %d ", cpu->mode);
+    fprintf(stderr,"Status: 0b");
+    fprintf(stderr,"%d", cpu->status.N);
+    fprintf(stderr,"%d", cpu->status.V);
+    fprintf(stderr,"%d", cpu->status.Unused);
+    fprintf(stderr,"%d", cpu->status.B);
+    fprintf(stderr,"%d", cpu->status.D);
+    fprintf(stderr,"%d", cpu->status.I);
+    fprintf(stderr,"%d", cpu->status.Z);
+    fprintf(stderr,"%d\n", cpu->status.C);
 }
 
 void printPC(const CPU* cpu) {
-    printf("PC: 0x%04x\n", cpu->PC);
+    fprintf(stderr, "PC: 0x%04x\n", cpu->PC);
 }
 
 void setDefaultParams(RunParams* params) {
@@ -58,27 +60,23 @@ void setDefaultParams(RunParams* params) {
 void execute(CPU* cpu, Memory* memory, RunParams params) {
     while (params.constRun || params.numCycles > 0) {
 
-        if (cpu->PC == 0x37c9) {
-            printPC(cpu);
+        if (cpu->PC == 0x3469) {
+            fprintf(stderr,"Success");
+            return;
         }
         //--fetch--//
         const Byte instructionByte = fetchByte(&params.numCycles, cpu, memory);
         //printf("%02x\n", instruction);
 
-        /*if (instructionByte == 0xFF) {
-            params.constRun = False;
-            printPC(cpu);
-            return;
-        }*/
-
         //--decode--//
         const Instruction decodedInstruction = *getInstruction(instructionByte, cpu);
+        //fprintf(stderr,"%s:\n", instNames[decodedInstruction.opcode]);
 
         //--execute--//
         decodedInstruction.execute(cpu, memory, &params.numCycles);
 
         //printStatus(cpu);
-        printPC(cpu);
+        //printPC(cpu);
 
         #ifdef _WIN32
         Sleep(params.clockSpeed);

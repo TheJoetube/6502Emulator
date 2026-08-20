@@ -2,6 +2,191 @@
 #include "../include/constants.h"
 #include <stdio.h>
 
+const char* instNames[256] = {
+    // 0x0x
+    [0x00] = "BRK_IMP",
+    [0x01] = "ORA_IND_X",
+    [0x05] = "ORA_ZP",
+    [0x06] = "ASL_ZP",
+    [0x08] = "PHP_IMP",
+    [0x09] = "ORA_IM",
+    [0x0A] = "ASL_ACC",
+    [0x0D] = "ORA_ABS",
+    [0x0E] = "ASL_ABS",
+
+    // 0x1x
+    [0x10] = "BPL_REL",
+    [0x11] = "ORA_IND_Y",
+    [0x15] = "ORA_ZP_X",
+    [0x16] = "ASL_ZP_X",
+    [0x18] = "CLC_IMP",
+    [0x19] = "ORA_ABS_Y",
+    [0x1D] = "ORA_ABS_X",
+    [0x1E] = "ASL_ABS_X",
+
+    // 0x2x
+    [0x20] = "JSR_ABS",
+    [0x21] = "AND_IND_X",
+    [0x24] = "BIT_ZP",
+    [0x25] = "AND_ZP",
+    [0x26] = "ROL_ZP",
+    [0x28] = "PLP_IMP",
+    [0x29] = "AND_IM",
+    [0x2A] = "ROL_ACC",
+    [0x2C] = "BIT_ABS",
+    [0x2D] = "AND_ABS",
+    [0x2E] = "ROL_ABS",
+
+    // 0x3x
+    [0x30] = "BMI_REL",
+    [0x31] = "AND_IND_Y",
+    [0x35] = "AND_ZP_X",
+    [0x36] = "ROL_ZP_X",
+    [0x38] = "SEC_IMP",
+    [0x39] = "AND_ABS_Y",
+    [0x3D] = "AND_ABS_X",
+    [0x3E] = "ROL_ABS_X",
+
+    // 0x4x
+    [0x40] = "RTI_IMP",
+    [0x41] = "EOR_IND_X",
+    [0x45] = "EOR_ZP",
+    [0x46] = "LSR_ZP",
+    [0x48] = "PHA_IMP",
+    [0x49] = "EOR_IM",
+    [0x4A] = "LSR_ACC",
+    [0x4C] = "JMP_ABS",
+    [0x4D] = "EOR_ABS",
+    [0x4E] = "LSR_ABS",
+
+    // 0x5x
+    [0x50] = "BVC_REL",
+    [0x51] = "EOR_IND_Y",
+    [0x55] = "EOR_ZP_X",
+    [0x56] = "LSR_ZP_X",
+    [0x58] = "CLI_IMP",
+    [0x59] = "EOR_ABS_Y",
+    [0x5D] = "EOR_ABS_X",
+    [0x5E] = "LSR_ABS_X",
+
+    // 0x6x
+    [0x60] = "RTS_IMP",
+    [0x61] = "ADC_IND_X",
+    [0x65] = "ADC_ZP",
+    [0x66] = "ROR_ZP",
+    [0x68] = "PLA_IMP",
+    [0x69] = "ADC_IM",
+    [0x6A] = "ROR_ACC",
+    [0x6C] = "JMP_IND",
+    [0x6D] = "ADC_ABS",
+    [0x6E] = "ROR_ABS",
+
+    // 0x7x
+    [0x70] = "BVS_REL",
+    [0x71] = "ADC_IND_Y",
+    [0x75] = "ADC_ZP_X",
+    [0x76] = "ROR_ZP_X",
+    [0x78] = "SEI_IMP",
+    [0x79] = "ADC_ABS_Y",
+    [0x7D] = "ADC_ABS_X",
+    [0x7E] = "ROR_ABS_X",
+
+    // 0x8x
+    [0x81] = "STA_IND_X",
+    [0x84] = "STY_ZP",
+    [0x85] = "STA_ZP",
+    [0x86] = "STX_ZP",
+    [0x88] = "DEY_IMP",
+    [0x8A] = "TXA_IMP",
+    [0x8C] = "STY_ABS",
+    [0x8D] = "STA_ABS",
+    [0x8E] = "STX_ABS",
+
+    // 0x9x
+    [0x90] = "BCC_REL",
+    [0x91] = "STA_IND_Y",
+    [0x94] = "STY_ZP_X",
+    [0x95] = "STA_ZP_X",
+    [0x96] = "STX_ZP_Y",
+    [0x98] = "TYA_IMP",
+    [0x99] = "STA_ABS_Y",
+    [0x9A] = "TXS_IMP",
+    [0x9D] = "STA_ABS_X",
+
+    // 0xAx
+    [0xA0] = "LDY_IM",
+    [0xA1] = "LDA_IND_X",
+    [0xA2] = "LDX_IM",
+    [0xA4] = "LDY_ZP",
+    [0xA5] = "LDA_ZP",
+    [0xA6] = "LDX_ZP",
+    [0xA8] = "TAY_IMP",
+    [0xA9] = "LDA_IM",
+    [0xAA] = "TAX_IMP",
+    [0xAC] = "LDY_ABS",
+    [0xAD] = "LDA_ABS",
+    [0xAE] = "LDX_ABS",
+
+    // 0xBx
+    [0xB0] = "BCS_REL",
+    [0xB1] = "LDA_IND_Y",
+    [0xB4] = "LDY_ZP_X",
+    [0xB5] = "LDA_ZP_X",
+    [0xB6] = "LDX_ZP_Y",
+    [0xB8] = "CLV_IMP",
+    [0xB9] = "LDA_ABS_Y",
+    [0xBA] = "TSX_IMP",
+    [0xBC] = "LDY_ABS_X",
+    [0xBD] = "LDA_ABS_X",
+    [0xBE] = "LDX_ABS_Y",
+
+    // 0xCx
+    [0xC0] = "CPY_IM",
+    [0xC1] = "CMP_IND_X",
+    [0xC4] = "CPY_ZP",
+    [0xC5] = "CMP_ZP",
+    [0xC6] = "DEC_ZP",
+    [0xC8] = "INY_IMP",
+    [0xC9] = "CMP_IM",
+    [0xCA] = "DEX_IMP",
+    [0xCC] = "CPY_ABS",
+    [0xCD] = "CMP_ABS",
+    [0xCE] = "DEC_ABS",
+
+    // 0xDx
+    [0xD0] = "BNE_REL",
+    [0xD1] = "CMP_IND_Y",
+    [0xD5] = "CMP_ZP_X",
+    [0xD6] = "DEC_ZP_X",
+    [0xD8] = "CLD_IMP",
+    [0xD9] = "CMP_ABS_Y",
+    [0xDD] = "CMP_ABS_X",
+    [0xDE] = "DEC_ABS_X",
+
+    // 0xEx
+    [0xE0] = "CPX_IM",
+    [0xE1] = "SBC_IND_X",
+    [0xE4] = "CPX_ZP",
+    [0xE5] = "SBC_ZP",
+    [0xE6] = "INC_ZP",
+    [0xE8] = "INX_IMP",
+    [0xE9] = "SBC_IM",
+    [0xEA] = "NOP_IMP",
+    [0xEC] = "CPX_ABS",
+    [0xED] = "SBC_ABS",
+    [0xEE] = "INC_ABS",
+
+    // 0xFx
+    [0xF0] = "BEQ_REL",
+    [0xF1] = "SBC_IND_Y",
+    [0xF5] = "SBC_ZP_X",
+    [0xF6] = "INC_ZP_X",
+    [0xF8] = "SED_IMP",
+    [0xF9] = "SBC_ABS_Y",
+    [0xFD] = "SBC_ABS_X",
+    [0xFE] = "INC_ABS_X"
+};
+
 void initInstructions() {
     //LDA
     inst.LDA_IM = (Instruction){0xA9,2,Immediate,LDA};
@@ -333,8 +518,8 @@ Word fetchWord(u32* cycles, CPU *cpu, const Memory *memory) {
  * @return
  */
 Word readWord(u32* cycles, const Word address, const Memory* memory) {
-    Byte loByte = readByte(cycles, address, memory);
-    Byte hiByte = readByte(cycles, address + 1, memory);
+    const Byte loByte = readByte(cycles, address, memory);
+    const Byte hiByte = readByte(cycles, address + 1, memory);
     return loByte | (hiByte << 8);
 }
 
@@ -349,14 +534,6 @@ void writeWord(u32* cycles, const Word data, const Word address, Memory *memory)
     memory->data[address] = data & 0xFF;
     memory->data[address+1] = (data >> 8);
     *cycles -= 2;
-}
-
-Byte wrapByte(const Word value) {
-    return value & 0xFF;
-}
-
-Word wrapWord(const Word value) {
-    return value & 0x00FF;
 }
 
 /**
@@ -410,12 +587,45 @@ Byte popByteFromStack(u32* cycles, CPU* cpu, Memory *memory) {
  * @param memory
  * @return
  */
-Word popWordFromStack(u32* cycles, CPU* cpu, Memory *memory) {
-    const Word value = readWord(cycles, STACKSTART + cpu->SP + 1, memory);
-    cpu->SP += 2;
+Word popWordFromStack(u32* cycles, CPU* cpu, Memory* memory) {
+    const Byte low = popByteFromStack(cycles, cpu, memory);
+    const Byte high = popByteFromStack(cycles, cpu, memory);
     *cycles -= 1;
-    return value;
+    return ((high << 8) | low);
 }
+
+/**
+ * Uses 2 Cycles
+ * @param cycles
+ * @param cpu
+ * @param address
+ * @param memory
+ * @return
+ */
+Word readZeroPageAddressX(u32* cycles, CPU* cpu, Byte address, Memory* memory) {
+    address += cpu->X;
+    address &= 0xFF;
+    const Byte low = readByte(cycles, address, memory);
+    const Byte high = readByte(cycles, (address + 1) & 0xFF, memory);
+    return (high << 8) | low;
+}
+
+/**
+ * Uses 2 Cycles
+ * @param cycles
+ * @param cpu
+ * @param address
+ * @param memory
+ * @return
+ */
+Word readZeroPageAddressY(u32* cycles, CPU* cpu, const Byte address, Memory* memory) {
+    const Byte low = readByte(cycles, address, memory);
+    const Byte high = readByte(cycles, (address + 1) & 0xFF, memory);
+    Word finalAddr = (high << 8) | low;
+    finalAddr += cpu->Y;
+    return finalAddr;
+}
+
 
 Instruction* getInstruction(const Byte instruction, CPU* cpu) {
     const size_t numInstructions = sizeof(inst) / sizeof(Instruction);
@@ -430,6 +640,7 @@ Instruction* getInstruction(const Byte instruction, CPU* cpu) {
     return &inst.NOP_IMP;
 }
 
+//100% Done
 void LDA(CPU* cpu, Memory* memory, u32* cycles) {
     switch(cpu->mode) {
         case Immediate:
@@ -444,7 +655,6 @@ void LDA(CPU* cpu, Memory* memory, u32* cycles) {
         case ZeroPage_X:
             Byte zpXAddress = fetchByte(cycles, cpu, memory);
             zpXAddress += cpu->X;
-            zpXAddress = wrapByte(zpXAddress);
             *cycles -= 1;
             cpu->A = readByte(cycles, 0x0000 | zpXAddress, memory);
             break;
@@ -467,18 +677,15 @@ void LDA(CPU* cpu, Memory* memory, u32* cycles) {
             break;
 
         case IndexedIndirect:
-            Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            indirectXAddress += cpu->X;
-            indirectXAddress = wrapWord(indirectXAddress);
+            const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
             *cycles -= 3;
-            cpu->A = readByte(cycles, indirectXAddress, memory);
+            cpu->A = readByte(cycles, readZeroPageAddressX(cycles, cpu, indirectXAddress, memory), memory);
             break;
 
         case IndirectIndexed:
-            Byte indirectYAddress = fetchByte(cycles, cpu, memory);
-            indirectYAddress += cpu->Y;
+            const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
             *cycles -= 2;
-            cpu->A = readByte(cycles, indirectYAddress, memory);
+            cpu->A = readByte(cycles, readZeroPageAddressY(cycles, cpu, indirectYAddress, memory), memory);
             break;
 
         default:
@@ -489,6 +696,7 @@ void LDA(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
 }
 
+//100% Done
 void LDX(CPU* cpu, Memory* memory, u32* cycles) {
     switch(cpu->mode) {
         case Immediate:
@@ -526,6 +734,7 @@ void LDX(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->X & NEGATIVEBITMASK) > 0;
 }
 
+//100% Done
 void LDY(CPU* cpu, Memory* memory, u32* cycles) {
     switch(cpu->mode) {
         case Immediate:
@@ -563,6 +772,7 @@ void LDY(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->Y & NEGATIVEBITMASK) > 0;
 }
 
+//100% Done
 void STA(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case ZeroPage:
@@ -597,18 +807,17 @@ void STA(CPU* cpu, Memory* memory, u32* cycles) {
             break;
 
         case IndexedIndirect:
-            Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            indirectXAddress += cpu->X;
-            indirectXAddress = wrapWord(indirectXAddress);
+            const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
             *cycles -= 3;
-            writeByte(cycles, cpu->A, indirectXAddress, memory);
+            const Word address = readZeroPageAddressX(cycles, cpu, indirectXAddress, memory);
+            writeByte(cycles, cpu->A, address, memory);
             break;
 
         case IndirectIndexed:
-            Byte indirectYAddress = fetchByte(cycles, cpu, memory);
-            indirectYAddress += cpu->Y;
+            const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
             *cycles -= 3;
-            writeByte(cycles, cpu->A, indirectYAddress, memory);
+            const Word addressY = readZeroPageAddressY(cycles, cpu, indirectYAddress, memory);
+            writeByte(cycles, cpu->A, addressY, memory);
             break;
 
         default:
@@ -617,6 +826,7 @@ void STA(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void STX(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case ZeroPage:
@@ -642,6 +852,7 @@ void STX(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void STY(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case ZeroPage:
@@ -667,6 +878,7 @@ void STY(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void TAX(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -682,6 +894,7 @@ void TAX(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->X & NEGATIVEBITMASK) > 0;
 }
 
+//100% Done
 void TAY(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -697,6 +910,7 @@ void TAY(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->Y & NEGATIVEBITMASK) > 0;
 }
 
+//100% Done
 void TXA(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -712,6 +926,7 @@ void TXA(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
 }
 
+//100% Done
 void TYA(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -727,6 +942,7 @@ void TYA(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
 }
 
+//100% Done
 void TSX(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -742,6 +958,7 @@ void TSX(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->X & NEGATIVEBITMASK) > 0;
 }
 
+//100% Done
 void TXS(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -755,6 +972,7 @@ void TXS(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void PHA(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -767,12 +985,12 @@ void PHA(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void PHP(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
-            cpu->status.B = 1;
-            cpu->status.Unused = 1;
-            pushByteToStack(cycles, cpu, cpu->status.value, memory);
+            const Byte psStack = cpu->status.value | 0b000010000 | 0b000100000;
+            pushByteToStack(cycles, cpu, psStack, memory);
             break;
 
         default:
@@ -781,11 +999,13 @@ void PHP(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void PLA(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
             const Byte stackByte = popByteFromStack(cycles, cpu, memory);
             cpu->A = stackByte;
+            *cycles -= 1;
             break;
 
         default:
@@ -796,11 +1016,14 @@ void PLA(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
 }
 
+//100% Done
 void PLP(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
             const Byte stackByte = popByteFromStack(cycles, cpu, memory);
             cpu->status.value = stackByte;
+            //delay I polling by 1 instruction?
+            *cycles -= 1;
             break;
 
         default:
@@ -809,6 +1032,7 @@ void PLP(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void AND(CPU* cpu, Memory* memory, u32* cycles) {
     switch(cpu->mode) {
         case Immediate:
@@ -823,7 +1047,6 @@ void AND(CPU* cpu, Memory* memory, u32* cycles) {
         case ZeroPage_X:
             Byte zpXAddress = fetchByte(cycles, cpu, memory);
             zpXAddress += cpu->X;
-            zpXAddress = wrapByte(zpXAddress);
             *cycles -= 1;
             cpu->A &= readByte(cycles, 0x0000 | zpXAddress, memory);
             break;
@@ -846,18 +1069,15 @@ void AND(CPU* cpu, Memory* memory, u32* cycles) {
             break;
 
         case IndexedIndirect:
-            Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            indirectXAddress += cpu->X;
-            indirectXAddress = wrapWord(indirectXAddress);
+            const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
             *cycles -= 3;
-            cpu->A &= readByte(cycles, indirectXAddress, memory);
+            cpu->A &= readByte(cycles, readZeroPageAddressX(cycles, cpu, indirectXAddress, memory), memory);
             break;
 
         case IndirectIndexed:
-            Byte indirectYAddress = fetchByte(cycles, cpu, memory);
-            indirectYAddress += cpu->Y;
+            const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
             *cycles -= 2;
-            cpu->A &= readByte(cycles, indirectYAddress, memory);
+            cpu->A &= readByte(cycles, readZeroPageAddressY(cycles, cpu, indirectYAddress, memory), memory);
             break;
 
         default:
@@ -868,6 +1088,7 @@ void AND(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
 }
 
+//100% Done
 void EOR(CPU* cpu, Memory* memory, u32* cycles) {
     switch(cpu->mode) {
         case Immediate:
@@ -882,7 +1103,6 @@ void EOR(CPU* cpu, Memory* memory, u32* cycles) {
         case ZeroPage_X:
             Byte zpXAddress = fetchByte(cycles, cpu, memory);
             zpXAddress += cpu->X;
-            zpXAddress = wrapByte(zpXAddress);
             *cycles -= 1;
             cpu->A ^= readByte(cycles, 0x0000 | zpXAddress, memory);
             break;
@@ -905,18 +1125,15 @@ void EOR(CPU* cpu, Memory* memory, u32* cycles) {
             break;
 
         case IndexedIndirect:
-            Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            indirectXAddress += cpu->X;
-            indirectXAddress = wrapWord(indirectXAddress);
+            const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
             *cycles -= 3;
-            cpu->A ^= readByte(cycles, indirectXAddress, memory);
+            cpu->A ^= readByte(cycles, readZeroPageAddressX(cycles, cpu, indirectXAddress, memory), memory);
             break;
 
         case IndirectIndexed:
-            Byte indirectYAddress = fetchByte(cycles, cpu, memory);
-            indirectYAddress += cpu->Y;
+            const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
             *cycles -= 2;
-            cpu->A ^= readByte(cycles, indirectYAddress, memory);
+            cpu->A ^= readByte(cycles, readZeroPageAddressY(cycles, cpu, indirectYAddress, memory), memory);
             break;
 
         default:
@@ -927,6 +1144,7 @@ void EOR(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
 }
 
+//100% Done
 void ORA(CPU* cpu, Memory* memory, u32* cycles) {
     switch(cpu->mode) {
         case Immediate:
@@ -941,7 +1159,6 @@ void ORA(CPU* cpu, Memory* memory, u32* cycles) {
         case ZeroPage_X:
             Byte zpXAddress = fetchByte(cycles, cpu, memory);
             zpXAddress += cpu->X;
-            zpXAddress = wrapByte(zpXAddress);
             *cycles -= 1;
             cpu->A |= readByte(cycles, 0x0000 | zpXAddress, memory);
             break;
@@ -964,18 +1181,15 @@ void ORA(CPU* cpu, Memory* memory, u32* cycles) {
             break;
 
         case IndexedIndirect:
-            Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            indirectXAddress += cpu->X;
-            indirectXAddress = wrapWord(indirectXAddress);
+            const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
             *cycles -= 3;
-            cpu->A |= readByte(cycles, indirectXAddress, memory);
+            cpu->A |= readByte(cycles, readZeroPageAddressX(cycles, cpu, indirectXAddress, memory), memory);
             break;
 
         case IndirectIndexed:
-            Byte indirectYAddress = fetchByte(cycles, cpu, memory);
-            indirectYAddress += cpu->Y;
+            const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
             *cycles -= 2;
-            cpu->A |= readByte(cycles, indirectYAddress, memory);
+            cpu->A |= readByte(cycles, readZeroPageAddressY(cycles, cpu, indirectYAddress, memory), memory);
             break;
 
         default:
@@ -986,6 +1200,7 @@ void ORA(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
 }
 
+//100% Done
 void BIT(CPU* cpu, Memory* memory, u32* cycles) {
     Byte result = 0x00;
     Byte memVal = 0x00;
@@ -1005,16 +1220,16 @@ void BIT(CPU* cpu, Memory* memory, u32* cycles) {
             printf("%s", NONMATCHCASE);
             break;
     }
-    result = cpu-> A & memVal;
+    result = cpu->A & memVal;
 
-    cpu->status.Z = (result == 0x00);
+    cpu->status.Z = (result == 0);
     cpu->status.V = (0b01000000 & memVal) > 0;
     cpu->status.N = (NEGATIVEBITMASK & memVal) > 0;
 }
 
+//100% Done
 void ADC(CPU* cpu, Memory* memory, u32* cycles) {
     Byte memVal = 0x00;
-    Word result = 0x0000;
 
     switch (cpu->mode) {
         case Immediate:
@@ -1029,7 +1244,6 @@ void ADC(CPU* cpu, Memory* memory, u32* cycles) {
         case ZeroPage_X:
             Byte zpXAddress = fetchByte(cycles, cpu, memory);
             zpXAddress += cpu->X;
-            zpXAddress = wrapByte(zpXAddress);
             *cycles -= 1;
             memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
             break;
@@ -1052,37 +1266,66 @@ void ADC(CPU* cpu, Memory* memory, u32* cycles) {
             break;
 
         case IndexedIndirect:
-            Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            indirectXAddress += cpu->X;
-            indirectXAddress = wrapWord(indirectXAddress);
+            const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
             *cycles -= 3;
-            memVal = readByte(cycles, indirectXAddress, memory);
+            memVal = readByte(cycles, readZeroPageAddressX(cycles, cpu, indirectXAddress, memory), memory);
             break;
 
         case IndirectIndexed:
-            Byte indirectYAddress = fetchByte(cycles, cpu, memory);
-            indirectYAddress += cpu->Y;
+            const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
             *cycles -= 2;
-            memVal = readByte(cycles, indirectYAddress, memory);
+            memVal = readByte(cycles, readZeroPageAddressY(cycles, cpu, indirectYAddress, memory), memory);
             break;
 
         default:
             printf("%s", NONMATCHCASE);
             break;
     }
-    const int areSignBitsTheSame = !((cpu->A ^ memVal) & 0b10000000);
-    result = cpu->A + memVal + cpu->status.C;
-    cpu->A = (result & 0xFF);
+    const Byte oldA = cpu->A;
+    const Byte carryIn = cpu->status.C ? 1 : 0;
 
-    cpu->status.Z = (cpu->A == 0);
-    cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
-    cpu->status.C = result > 0xFF;
-    cpu->status.V = areSignBitsTheSame && ((cpu->A ^ memVal) & NEGATIVEBITMASK);
+    /*
+     * Always calculate the binary result first.
+     * NMOS 6502 uses this for V, and its decimal-mode N/Z behavior
+     * is based on this binary intermediate result.
+     */
+    const Word binaryResult = (Word)oldA + (Word)memVal + carryIn;
+
+    const Byte binaryByte = (Byte)binaryResult;
+
+    cpu->status.Z = (binaryByte == 0);
+    cpu->status.N = (binaryByte & 0x80) != 0;
+
+    cpu->status.V = ((~(oldA ^ memVal) & (oldA ^ binaryByte)) & 0x80) != 0;
+
+    if (!cpu->status.D) {
+        cpu->A = binaryByte;
+        cpu->status.C = binaryResult > 0xFF;
+    } else {
+        /*
+         * Decimal/BCD adjustment.
+         */
+        int low  = (oldA & 0x0F) + (memVal & 0x0F) + carryIn;
+        int high = (oldA >> 4) + (memVal >> 4);
+
+        if (low > 9) {
+            low += 6;
+            high++;
+        }
+
+        cpu->status.C = high > 9;
+
+        if (high > 9) {
+            high += 6;
+        }
+
+        cpu->A = (Byte)((high << 4) | (low & 0x0F));
+    }
 }
 
+//100% Done
 void SBC(CPU* cpu, Memory* memory, u32* cycles) {
     Byte memVal = 0x00;
-    Word result = 0x0000;
 
     switch (cpu->mode) {
         case Immediate:
@@ -1097,7 +1340,6 @@ void SBC(CPU* cpu, Memory* memory, u32* cycles) {
         case ZeroPage_X:
             Byte zpXAddress = fetchByte(cycles, cpu, memory);
             zpXAddress += cpu->X;
-            zpXAddress = wrapByte(zpXAddress);
             *cycles -= 1;
             memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
             break;
@@ -1120,35 +1362,75 @@ void SBC(CPU* cpu, Memory* memory, u32* cycles) {
             break;
 
         case IndexedIndirect:
-            Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            indirectXAddress += cpu->X;
-            indirectXAddress = wrapWord(indirectXAddress);
+            const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
             *cycles -= 3;
-            memVal = readByte(cycles, indirectXAddress, memory);
+            memVal = readByte(cycles, readZeroPageAddressX(cycles, cpu, indirectXAddress, memory), memory);
             break;
 
         case IndirectIndexed:
-            Byte indirectYAddress = fetchByte(cycles, cpu, memory);
-            indirectYAddress += cpu->Y;
+            const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
             *cycles -= 2;
-            memVal = readByte(cycles, indirectYAddress, memory);
+            memVal = readByte(cycles, readZeroPageAddressY(cycles, cpu, indirectYAddress, memory), memory);
             break;
 
         default:
             printf("%s", NONMATCHCASE);
             break;
     }
-    memVal = ~memVal;
-    const int areSignBitsTheSame = !((cpu->A ^ memVal) & NEGATIVEBITMASK);
-    result = cpu->A + memVal + cpu->status.C;
-    cpu->A = (result & 0xFF);
+    const Byte oldA = cpu->A;
+    const Byte carryIn = cpu->status.C ? 1 : 0;
 
-    cpu->status.Z = (cpu->A == 0);
-    cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
-    cpu->status.C = result > 0xFF;
-    cpu->status.V = areSignBitsTheSame && ((cpu->A ^ memVal) & NEGATIVEBITMASK);
+    /*
+     * Binary subtraction:
+     *
+     * A - M - (1-C)
+     *
+     * equivalently:
+     *
+     * A + (~M) + C
+     */
+    const Word binaryResult = (Word)oldA + (Word)(memVal ^ 0xFF) + carryIn;
+
+    const Byte binaryByte = (Byte)binaryResult;
+
+    cpu->status.Z = (binaryByte == 0);
+    cpu->status.N = (binaryByte & 0x80) != 0;
+
+    cpu->status.V = ((oldA ^ binaryByte) & (oldA ^ memVal) & 0x80) != 0;
+
+    if (!cpu->status.D) {
+        cpu->A = binaryByte;
+        cpu->status.C = (binaryResult & 0x100) != 0;
+    } else {
+        /*
+         * Decimal/BCD subtraction.
+         */
+        int low =
+            (oldA & 0x0F) -
+            (memVal & 0x0F) -
+            (carryIn ? 0 : 1);
+
+        int high =
+            (oldA >> 4) -
+            (memVal >> 4);
+
+        if (low < 0) {
+            low -= 6;
+            high--;
+        }
+
+        if (high < 0) {
+            high -= 6;
+            cpu->status.C = 0;
+        } else {
+            cpu->status.C = 1;
+        }
+
+        cpu->A = (Byte)(((high & 0x0F) << 4) | (low & 0x0F));
+    }
 }
 
+//100% Done
 void CMP(CPU* cpu, Memory* memory, u32* cycles) {
     Byte memVal = 0x00;
 
@@ -1165,7 +1447,6 @@ void CMP(CPU* cpu, Memory* memory, u32* cycles) {
         case ZeroPage_X:
             Byte zpXAddress = fetchByte(cycles, cpu, memory);
             zpXAddress += cpu->X;
-            zpXAddress = wrapByte(zpXAddress);
             *cycles -= 1;
             memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
             break;
@@ -1188,18 +1469,15 @@ void CMP(CPU* cpu, Memory* memory, u32* cycles) {
             break;
 
         case IndexedIndirect:
-            Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            indirectXAddress += cpu->X;
-            indirectXAddress = wrapWord(indirectXAddress);
+            const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
             *cycles -= 3;
-            memVal = readByte(cycles, indirectXAddress, memory);
+            memVal = readByte(cycles, readZeroPageAddressX(cycles, cpu, indirectXAddress, memory), memory);
             break;
 
         case IndirectIndexed:
-            Byte indirectYAddress = fetchByte(cycles, cpu, memory);
-            indirectYAddress += cpu->Y;
+            const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
             *cycles -= 2;
-            memVal = readByte(cycles, indirectYAddress, memory);
+            memVal = readByte(cycles, readZeroPageAddressY(cycles, cpu, indirectYAddress, memory), memory);
             break;
 
         default:
@@ -1211,6 +1489,7 @@ void CMP(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = ((cpu->A - memVal) & NEGATIVEBITMASK) > 0;
 }
 
+//100% Done
 void CPX(CPU* cpu, Memory* memory, u32* cycles) {
     Byte memVal = 0x00;
 
@@ -1238,6 +1517,7 @@ void CPX(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = ((cpu->X - memVal) & NEGATIVEBITMASK) > 0;
 }
 
+//100% Done
 void CPY(CPU* cpu, Memory* memory, u32* cycles) {
     Byte memVal = 0x00;
 
@@ -1265,6 +1545,7 @@ void CPY(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = ((cpu->Y - memVal) & NEGATIVEBITMASK) > 0;
 }
 
+//100% Done
 void INC(CPU* cpu, Memory* memory, u32* cycles) {
     Byte memVal = 0x00;
     switch (cpu->mode) {
@@ -1279,7 +1560,6 @@ void INC(CPU* cpu, Memory* memory, u32* cycles) {
         case ZeroPage_X:
             Byte zpXAddress = fetchByte(cycles, cpu, memory);
             zpXAddress += cpu->X;
-            zpXAddress = wrapByte(zpXAddress);
             *cycles -= 1;
             memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
             memVal += 1;
@@ -1313,6 +1593,7 @@ void INC(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (memVal & NEGATIVEBITMASK) > 0;
 }
 
+//100% Done
 void INX(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -1328,6 +1609,7 @@ void INX(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->X & NEGATIVEBITMASK) > 0;
 }
 
+//100% Done
 void INY(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -1343,6 +1625,7 @@ void INY(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->Y & NEGATIVEBITMASK) > 0;
 }
 
+//100% Done
 void DEC(CPU* cpu, Memory* memory, u32* cycles) {
     Byte memVal = 0x00;
     switch (cpu->mode) {
@@ -1357,7 +1640,6 @@ void DEC(CPU* cpu, Memory* memory, u32* cycles) {
         case ZeroPage_X:
             Byte zpXAddress = fetchByte(cycles, cpu, memory);
             zpXAddress += cpu->X;
-            zpXAddress = wrapByte(zpXAddress);
             *cycles -= 1;
             memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
             memVal -= 1;
@@ -1391,6 +1673,7 @@ void DEC(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (memVal & NEGATIVEBITMASK) > 0;
 }
 
+//100% Done
 void DEX(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -1406,6 +1689,7 @@ void DEX(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->X & NEGATIVEBITMASK) > 0;
 }
 
+//100% Done
 void DEY(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -1421,6 +1705,7 @@ void DEY(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->Y & NEGATIVEBITMASK) > 0;
 }
 
+//100% Done
 void ASL(CPU* cpu, Memory* memory, u32* cycles) {
     int isAcc = False;
     Byte memVal = 0x00;
@@ -1488,6 +1773,7 @@ void ASL(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.C = (oldVal & NEGATIVEBITMASK) > 0;
 }
 
+//100% Done
 void LSR(CPU* cpu, Memory* memory, u32* cycles) {
     int isAcc = False;
     Byte memVal = 0x00;
@@ -1555,6 +1841,8 @@ void LSR(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.C = (oldVal & 0b00000001) > 0;
 }
 
+
+//100% Done
 void ROL(CPU* cpu, Memory* memory, u32* cycles) {
     int isAcc = False;
     Byte memVal = 0x00;
@@ -1628,6 +1916,7 @@ void ROL(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.C = (oldVal & NEGATIVEBITMASK) > 0;
 }
 
+//100% Done
 void ROR(CPU* cpu, Memory* memory, u32* cycles) {
     int isAcc = False;
     Byte memVal = 0x00;
@@ -1636,7 +1925,7 @@ void ROR(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Accumulator:
             isAcc = True;
-            oldBit0 = (cpu->A & 0b00000001) > 0 ? True : False;
+            oldBit0 = (cpu->A & 0b00000001) > 0;
             cpu->A = cpu->A >> 1;
             if (cpu->status.C) {
                 cpu->A |= NEGATIVEBITMASK;
@@ -1647,7 +1936,7 @@ void ROR(CPU* cpu, Memory* memory, u32* cycles) {
         case ZeroPage:
             const Byte zpAddress = fetchByte(cycles, cpu, memory);
             memVal = readByte(cycles, 0x0000 | zpAddress, memory);
-            oldBit0 = (memVal & 0b00000001) > 0 ? True : False;
+            oldBit0 = (memVal & 0b00000001) > 0;
             memVal = memVal >> 1;
             if (cpu->status.C) {
                 memVal |= NEGATIVEBITMASK;
@@ -1661,7 +1950,7 @@ void ROR(CPU* cpu, Memory* memory, u32* cycles) {
             zpXAddress += cpu->X;
             *cycles -= 1;
             memVal = readByte(cycles, 0x0000 | zpXAddress, memory);
-            oldBit0 = (memVal & 0b00000001) > 0 ? True : False;
+            oldBit0 = (memVal & 0b00000001) > 0;
             memVal = memVal >> 1;
             if (cpu->status.C) {
                 memVal |= NEGATIVEBITMASK;
@@ -1673,7 +1962,7 @@ void ROR(CPU* cpu, Memory* memory, u32* cycles) {
         case Absolute:
             const Word absAddress = fetchWord(cycles, cpu, memory);
             memVal = readByte(cycles, absAddress, memory);
-            oldBit0 = (memVal & 0b00000001) > 0 ? True : False;
+            oldBit0 = (memVal & 0b00000001) > 0;
             memVal = memVal >> 1;
             if (cpu->status.C) {
                 memVal |= NEGATIVEBITMASK;
@@ -1687,7 +1976,7 @@ void ROR(CPU* cpu, Memory* memory, u32* cycles) {
             absXAddress += cpu->X;
             *cycles -= 1;
             memVal = readByte(cycles, absXAddress, memory);
-            oldBit0 = (memVal & 0b00000001) > 0 ? True : False;
+            oldBit0 = (memVal & 0b00000001) > 0;
             memVal = memVal >> 1;
             if (cpu->status.C) {
                 memVal |= NEGATIVEBITMASK;
@@ -1710,6 +1999,7 @@ void ROR(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.C = oldBit0;
 }
 
+//Done?
 void JMP(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Absolute:
@@ -1719,9 +2009,8 @@ void JMP(CPU* cpu, Memory* memory, u32* cycles) {
 
         case Indirect:
             const Word jmpIndAddr = fetchWord(cycles, cpu, memory);
-            const Byte lowByte = readByte(cycles, jmpIndAddr, memory);
-            const Byte highByte = readByte(cycles, jmpIndAddr + 1, memory);
-            cpu->PC = (Word) (highByte << 8) | lowByte;
+            const Word address = readWord(cycles, jmpIndAddr, memory);
+            cpu->PC = address;
             break;
 
         default:
@@ -1730,6 +2019,7 @@ void JMP(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void JSR(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Absolute:
@@ -1745,6 +2035,7 @@ void JSR(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void RTS(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -1758,6 +2049,7 @@ void RTS(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void BCC(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Relative:
@@ -1774,6 +2066,7 @@ void BCC(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void BCS(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Relative:
@@ -1790,6 +2083,7 @@ void BCS(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void BEQ(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Relative:
@@ -1806,6 +2100,7 @@ void BEQ(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void BMI(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Relative:
@@ -1822,6 +2117,7 @@ void BMI(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void BNE(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Relative:
@@ -1838,6 +2134,7 @@ void BNE(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void BPL(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Relative:
@@ -1854,6 +2151,7 @@ void BPL(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void BVC(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Relative:
@@ -1870,6 +2168,7 @@ void BVC(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void BVS(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Relative:
@@ -1886,6 +2185,7 @@ void BVS(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void CLC(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -1899,6 +2199,7 @@ void CLC(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void CLD(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -1912,6 +2213,7 @@ void CLD(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void CLI(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -1925,6 +2227,7 @@ void CLI(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void CLV(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -1938,6 +2241,7 @@ void CLV(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void SEC(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -1951,6 +2255,7 @@ void SEC(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void SED(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -1964,6 +2269,7 @@ void SED(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void SEI(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -1977,13 +2283,15 @@ void SEI(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void BRK(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
             pushWordToStack(cycles, cpu, cpu->PC + 1, memory);
-            pushByteToStack(cycles, cpu, cpu->status.value, memory);
+            const Byte psStack = cpu->status.value | 0b00010000 | 0b00100000;
+            pushByteToStack(cycles, cpu, psStack, memory);
             cpu->PC = readWord(cycles, IRQVEC_HI, memory);
-            cpu->status.B = True;
+            cpu->status.I = True;
             *cycles -= 1;
             break;
 
@@ -1993,6 +2301,7 @@ void BRK(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void RTI(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -2008,6 +2317,7 @@ void RTI(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
+//100% Done
 void NOP(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:

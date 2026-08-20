@@ -273,6 +273,8 @@ typedef union {
 
 Instructions inst;
 
+extern const char* instNames[];
+
 void initInstructions();
 Instruction* getInstruction(Byte instruction, CPU* cpu);
 Byte fetchByte(u32 *cycles, CPU *cpu, const Memory *memory);
@@ -287,7 +289,6 @@ void writeWord(u32* cycles, Word data, Word address, Memory *memory);
 void pushWordToStack(u32* cycles, CPU* cpu, Word data, Memory *memory);
 Word popWordFromStack(u32* cycles, CPU* cpu, Memory *memory);
 
-Byte wrapByte(Word value);
 Word wrapWord(Word value);
 
 //--Load/Store-Operations--//
