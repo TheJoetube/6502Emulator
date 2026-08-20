@@ -60,13 +60,13 @@ void setDefaultParams(RunParams* params) {
 void execute(CPU* cpu, Memory* memory, RunParams params) {
     while (params.constRun || params.numCycles > 0) {
 
+        // exit for test program
         if (cpu->PC == 0x3469) {
-            fprintf(stderr,"Success");
+            fprintf(stderr,"Success\n");
             return;
         }
         //--fetch--//
         const Byte instructionByte = fetchByte(&params.numCycles, cpu, memory);
-        //printf("%02x\n", instruction);
 
         //--decode--//
         const Instruction decodedInstruction = *getInstruction(instructionByte, cpu);
