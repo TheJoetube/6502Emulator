@@ -628,6 +628,7 @@ Word readZeroPageAddressY(u32* cycles, const CPU* cpu, const Byte address, const
     const Byte low = readByte(cycles, address, memory);
     const Byte high = readByte(cycles, (address + 1) & 0xFF, memory);
     Word finalAddr = (high << 8) | low;
+    crossedPageBoundary(cycles, finalAddr, finalAddr + cpu->Y);
     finalAddr += cpu->Y;
     return finalAddr;
 }
@@ -644,6 +645,23 @@ Instruction* getInstruction(const Byte instruction, CPU* cpu) {
     printf("Non matched Instruction: 0x%02x\n", instruction);
     cpu->mode = inst.NOP_IMP.mode;
     return &inst.NOP_IMP;
+}
+
+void crossedPageBoundary(u32* cycles, const Word address1, const Word address2) {
+    const Byte CrossedPageBoundary = (address1 ^ address2) >> 8;
+    if ( CrossedPageBoundary )
+    {
+        *cycles -= 1;
+    }
+
+}
+
+void crossedPageBoundaryPC(u32* cycles, const Word pc1, const Word pc2) {
+    const Byte PageChanged = (pc2 >> 8) != (pc1 >> 8);
+    if ( PageChanged )
+    {
+        *cycles -= 1;
+    }
 }
 
 void LDA(CPU* cpu, Memory* memory, u32* cycles) {
@@ -674,16 +692,16 @@ void LDA(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case Absolute_X: {
-            //Implement Page Boundary
             Word address = fetchWord(cycles, cpu, memory);
+            crossedPageBoundary(cycles, address, address + cpu->X);
             address += cpu->X;
             cpu->A = readByte(cycles, address, memory);
             break;
         }
 
         case Absolute_Y: {
-            //Implement Page Boundary
             Word address = fetchWord(cycles, cpu, memory);
+            crossedPageBoundary(cycles, address, address + cpu->Y);
             address += cpu->Y;
             cpu->A = readByte(cycles, address, memory);
             break;
@@ -696,7 +714,6 @@ void LDA(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case IndirectIndexed: {
-            //Implement Page Boundary
             const Byte address = fetchByte(cycles, cpu, memory);
             cpu->A = readByte(cycles, readZeroPageAddressY(cycles, cpu, address, memory), memory);
             break;
@@ -739,8 +756,8 @@ void LDX(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case Absolute_Y: {
-            //Implement Page Boundary
             Word address = fetchWord(cycles, cpu, memory);
+            crossedPageBoundary(cycles, address, address + cpu->Y);
             address += cpu->Y;
             cpu->X = readByte(cycles, address, memory);
             break;
@@ -783,8 +800,8 @@ void LDY(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case Absolute_X: {
-            //Implement Page Boundary
             Word address = fetchWord(cycles, cpu, memory);
+            crossedPageBoundary(cycles, address, address + cpu->X);
             address += cpu->X;
             cpu->Y = readByte(cycles, address, memory);
             break;
@@ -1110,16 +1127,16 @@ void AND(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case Absolute_X: {
-            //Implement Page Boundary
             Word address = fetchWord(cycles, cpu, memory);
+            crossedPageBoundary(cycles, address, address + cpu->X);
             address += cpu->X;
             cpu->A &= readByte(cycles, address, memory);
             break;
         }
 
         case Absolute_Y: {
-            //Implement Page Boundary
             Word address = fetchWord(cycles, cpu, memory);
+            crossedPageBoundary(cycles, address, address + cpu->Y);
             address += cpu->Y;
             cpu->A &= readByte(cycles, address, memory);
             break;
@@ -1132,7 +1149,6 @@ void AND(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case IndirectIndexed: {
-            //Implement Page Boundary
             const Byte address = fetchByte(cycles, cpu, memory);
             cpu->A &= readByte(cycles, readZeroPageAddressY(cycles, cpu, address, memory), memory);
             break;
@@ -1175,16 +1191,16 @@ void EOR(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case Absolute_X: {
-            //Implement Page Boundary
             Word address = fetchWord(cycles, cpu, memory);
+            crossedPageBoundary(cycles, address, address + cpu->X);
             address += cpu->X;
             cpu->A ^= readByte(cycles, address, memory);
             break;
         }
 
         case Absolute_Y: {
-            //Implement Page Boundary
             Word address = fetchWord(cycles, cpu, memory);
+            crossedPageBoundary(cycles, address, address + cpu->Y);
             address += cpu->Y;
             cpu->A ^= readByte(cycles, address, memory);
             break;
@@ -1197,7 +1213,6 @@ void EOR(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case IndirectIndexed: {
-            //Implement Page Boundary
             const Byte address = fetchByte(cycles, cpu, memory);
             cpu->A ^= readByte(cycles, readZeroPageAddressY(cycles, cpu, address, memory), memory);
             break;
@@ -1240,16 +1255,16 @@ void ORA(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case Absolute_X: {
-            //Implement Page Boundary
             Word address = fetchWord(cycles, cpu, memory);
+            crossedPageBoundary(cycles, address, address + cpu->X);
             address += cpu->X;
             cpu->A |= readByte(cycles, address, memory);
             break;
         }
 
         case Absolute_Y: {
-            //Implement Page Boundary
             Word address = fetchWord(cycles, cpu, memory);
+            crossedPageBoundary(cycles, address, address + cpu->Y);
             address += cpu->Y;
             cpu->A |= readByte(cycles, address, memory);
             break;
@@ -1262,7 +1277,6 @@ void ORA(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case IndirectIndexed: {
-            //Implement Page Boundary
             const Byte address = fetchByte(cycles, cpu, memory);
             cpu->A |= readByte(cycles, readZeroPageAddressY(cycles, cpu, address, memory), memory);
             break;
@@ -1336,16 +1350,16 @@ void ADC(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case Absolute_X: {
-            //Implement Page Boundary
             Word address = fetchWord(cycles, cpu, memory);
+            crossedPageBoundary(cycles, address, address + cpu->X);
             address += cpu->X;
             memVal = readByte(cycles, address, memory);
             break;
         }
 
         case Absolute_Y: {
-            //Implement Page Boundary
             Word address = fetchWord(cycles, cpu, memory);
+            crossedPageBoundary(cycles, address, address + cpu->Y);
             address += cpu->Y;
             memVal = readByte(cycles, address, memory);
             break;
@@ -1358,7 +1372,6 @@ void ADC(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case IndirectIndexed: {
-            //Implement Page Boundary
             const Byte address = fetchByte(cycles, cpu, memory);
             memVal = readByte(cycles, readZeroPageAddressY(cycles, cpu, address, memory), memory);
             break;
@@ -1441,16 +1454,16 @@ void SBC(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case Absolute_X: {
-            //Implement Page Boundary
             Word address = fetchWord(cycles, cpu, memory);
+            crossedPageBoundary(cycles, address, address + cpu->X);
             address += cpu->X;
             memVal = readByte(cycles, address, memory);
             break;
         }
 
         case Absolute_Y: {
-            //Implement Page Boundary
             Word address = fetchWord(cycles, cpu, memory);
+            crossedPageBoundary(cycles, address, address + cpu->Y);
             address += cpu->Y;
             memVal = readByte(cycles, address, memory);
             break;
@@ -1463,7 +1476,6 @@ void SBC(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case IndirectIndexed: {
-            //Implement Page Boundary
             const Byte address = fetchByte(cycles, cpu, memory);
             memVal = readByte(cycles, readZeroPageAddressY(cycles, cpu, address, memory), memory);
             break;
@@ -1557,16 +1569,16 @@ void CMP(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case Absolute_X: {
-            //Implement Page Boundary
             Word address = fetchWord(cycles, cpu, memory);
+            crossedPageBoundary(cycles, address, address + cpu->X);
             address += cpu->X;
             memVal = readByte(cycles, address, memory);
             break;
         }
 
         case Absolute_Y: {
-            //Implement Page Boundary
             Word address = fetchWord(cycles, cpu, memory);
+            crossedPageBoundary(cycles, address, address + cpu->Y);
             address += cpu->Y;
             memVal = readByte(cycles, address, memory);
             break;
@@ -1579,7 +1591,6 @@ void CMP(CPU* cpu, Memory* memory, u32* cycles) {
         }
 
         case IndirectIndexed: {
-            //Implement Page Boundary
             const Byte address = fetchByte(cycles, cpu, memory);
             memVal = readByte(cycles, readZeroPageAddressY(cycles, cpu, address, memory), memory);
             break;
@@ -2202,9 +2213,9 @@ void RTS(CPU* cpu, Memory* memory, u32* cycles) {
 void BCC(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Relative: {
-            //Implement Page Crossed
             const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
             if (!cpu->status.C) {
+                crossedPageBoundaryPC(cycles, cpu->PC, cpu->PC + offset);
                 cpu->PC += offset;
                 *cycles -= 1;
             }
@@ -2221,9 +2232,9 @@ void BCC(CPU* cpu, Memory* memory, u32* cycles) {
 void BCS(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Relative: {
-            //Implement Page Crossed
             const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
             if (cpu->status.C) {
+                crossedPageBoundaryPC(cycles, cpu->PC, cpu->PC + offset);
                 cpu->PC += offset;
                 *cycles -= 1;
             }
@@ -2240,9 +2251,9 @@ void BCS(CPU* cpu, Memory* memory, u32* cycles) {
 void BEQ(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Relative: {
-            //Implement Page Crossed
             const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
             if (cpu->status.Z) {
+                crossedPageBoundaryPC(cycles, cpu->PC, cpu->PC + offset);
                 cpu->PC += offset;
                 *cycles -= 1;
             }
@@ -2259,9 +2270,9 @@ void BEQ(CPU* cpu, Memory* memory, u32* cycles) {
 void BMI(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Relative: {
-            //Implement Page Crossed
             const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
             if (cpu->status.N) {
+                crossedPageBoundaryPC(cycles, cpu->PC, cpu->PC + offset);
                 cpu->PC += offset;
                 *cycles -= 1;
             }
@@ -2278,9 +2289,9 @@ void BMI(CPU* cpu, Memory* memory, u32* cycles) {
 void BNE(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Relative: {
-            //Implement Page Crossed
             const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
             if (!cpu->status.Z) {
+                crossedPageBoundaryPC(cycles, cpu->PC, cpu->PC + offset);
                 cpu->PC += offset;
                 *cycles -= 1;
             }
@@ -2297,9 +2308,9 @@ void BNE(CPU* cpu, Memory* memory, u32* cycles) {
 void BPL(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Relative: {
-            //Implement Page Crossed
             const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
             if (!cpu->status.N) {
+                crossedPageBoundaryPC(cycles, cpu->PC, cpu->PC + offset);
                 cpu->PC += offset;
                 *cycles -= 1;
             }
@@ -2316,9 +2327,9 @@ void BPL(CPU* cpu, Memory* memory, u32* cycles) {
 void BVC(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Relative: {
-            //Implement Page Crossed
             const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
             if (!cpu->status.V) {
+                crossedPageBoundaryPC(cycles, cpu->PC, cpu->PC + offset);
                 cpu->PC += offset;
                 *cycles -= 1;
             }
@@ -2335,9 +2346,9 @@ void BVC(CPU* cpu, Memory* memory, u32* cycles) {
 void BVS(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Relative: {
-            //Implement Page Crossed
             const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
             if (cpu->status.V) {
+                crossedPageBoundaryPC(cycles, cpu->PC, cpu->PC + offset);
                 cpu->PC += offset;
                 *cycles -= 1;
             }

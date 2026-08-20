@@ -292,6 +292,8 @@ Word popWordFromStack(u32* cycles, CPU* cpu, const Memory *memory);
 Word readZeroPageAddressX(u32* cycles, const CPU* cpu, Byte address, const Memory* memory);
 Word readZeroPageAddressY(u32* cycles, const CPU* cpu, Byte address, const Memory* memory);
 
+void crossedPageBoundary(u32* cycles, Word address1, Word address2);
+
 //--Load/Store-Operations--//
 void LDA(CPU* cpu, Memory* memory, u32* cycles);
 void LDX(CPU* cpu, Memory* memory, u32* cycles);
