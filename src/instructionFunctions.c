@@ -511,7 +511,7 @@ Word fetchWord(u32* cycles, CPU *cpu, const Memory *memory) {
 }
 
 /**
- * Uses no cycles
+ * Uses 2 cycles
  * @param cycles
  * @param address
  * @param memory
@@ -595,7 +595,7 @@ Word popWordFromStack(u32* cycles, CPU* cpu, Memory* memory) {
 }
 
 /**
- * Uses 2 Cycles
+ * Uses 3 Cycles
  * @param cycles
  * @param cpu
  * @param address
@@ -604,6 +604,7 @@ Word popWordFromStack(u32* cycles, CPU* cpu, Memory* memory) {
  */
 Word readZeroPageAddressX(u32* cycles, CPU* cpu, Byte address, Memory* memory) {
     address += cpu->X;
+    *cycles -= 1;
     address &= 0xFF;
     const Byte low = readByte(cycles, address, memory);
     const Byte high = readByte(cycles, (address + 1) & 0xFF, memory);
@@ -640,7 +641,6 @@ Instruction* getInstruction(const Byte instruction, CPU* cpu) {
     return &inst.NOP_IMP;
 }
 
-//100% Done
 void LDA(CPU* cpu, Memory* memory, u32* cycles) {
     switch(cpu->mode) {
         case Immediate:
@@ -664,13 +664,13 @@ void LDA(CPU* cpu, Memory* memory, u32* cycles) {
             cpu->A = readByte(cycles, absAddress, memory);
             break;
 
-        case Absolute_X:
+        case Absolute_X: //Implement Page Boundary
             Word absXAddress = fetchWord(cycles, cpu, memory);
             absXAddress += cpu->X;
             cpu->A = readByte(cycles, absXAddress, memory);
             break;
 
-        case Absolute_Y:
+        case Absolute_Y: //Implement Page Boundary
             Word absYAddress = fetchWord(cycles, cpu, memory);
             absYAddress += cpu->Y;
             cpu->A = readByte(cycles, absYAddress, memory);
@@ -678,13 +678,11 @@ void LDA(CPU* cpu, Memory* memory, u32* cycles) {
 
         case IndexedIndirect:
             const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            *cycles -= 3;
             cpu->A = readByte(cycles, readZeroPageAddressX(cycles, cpu, indirectXAddress, memory), memory);
             break;
 
-        case IndirectIndexed:
+        case IndirectIndexed: //Implement Page Boundary
             const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
-            *cycles -= 2;
             cpu->A = readByte(cycles, readZeroPageAddressY(cycles, cpu, indirectYAddress, memory), memory);
             break;
 
@@ -696,7 +694,6 @@ void LDA(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
 }
 
-//100% Done
 void LDX(CPU* cpu, Memory* memory, u32* cycles) {
     switch(cpu->mode) {
         case Immediate:
@@ -720,7 +717,7 @@ void LDX(CPU* cpu, Memory* memory, u32* cycles) {
             cpu->X = readByte(cycles, absAddress, memory);
             break;
 
-        case Absolute_Y:
+        case Absolute_Y: //Implement Page Boundary
             Word absYAddress = fetchWord(cycles, cpu, memory);
             absYAddress += cpu->Y;
             cpu->X = readByte(cycles, absYAddress, memory);
@@ -734,7 +731,6 @@ void LDX(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->X & NEGATIVEBITMASK) > 0;
 }
 
-//100% Done
 void LDY(CPU* cpu, Memory* memory, u32* cycles) {
     switch(cpu->mode) {
         case Immediate:
@@ -758,7 +754,7 @@ void LDY(CPU* cpu, Memory* memory, u32* cycles) {
             cpu->Y = readByte(cycles, absAddress, memory);
             break;
 
-        case Absolute_X:
+        case Absolute_X: //Implement Page Boundary
             Word absXAddress = fetchWord(cycles, cpu, memory);
             absXAddress += cpu->X;
             cpu->Y = readByte(cycles, absXAddress, memory);
@@ -772,7 +768,6 @@ void LDY(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->Y & NEGATIVEBITMASK) > 0;
 }
 
-//100% Done
 void STA(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case ZeroPage:
@@ -808,14 +803,13 @@ void STA(CPU* cpu, Memory* memory, u32* cycles) {
 
         case IndexedIndirect:
             const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            *cycles -= 3;
             const Word address = readZeroPageAddressX(cycles, cpu, indirectXAddress, memory);
             writeByte(cycles, cpu->A, address, memory);
             break;
 
         case IndirectIndexed:
             const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
-            *cycles -= 3;
+            *cycles -= 1;
             const Word addressY = readZeroPageAddressY(cycles, cpu, indirectYAddress, memory);
             writeByte(cycles, cpu->A, addressY, memory);
             break;
@@ -826,7 +820,6 @@ void STA(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void STX(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case ZeroPage:
@@ -852,7 +845,6 @@ void STX(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void STY(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case ZeroPage:
@@ -878,7 +870,6 @@ void STY(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void TAX(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -894,7 +885,6 @@ void TAX(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->X & NEGATIVEBITMASK) > 0;
 }
 
-//100% Done
 void TAY(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -910,7 +900,6 @@ void TAY(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->Y & NEGATIVEBITMASK) > 0;
 }
 
-//100% Done
 void TXA(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -926,7 +915,6 @@ void TXA(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
 }
 
-//100% Done
 void TYA(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -942,7 +930,6 @@ void TYA(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
 }
 
-//100% Done
 void TSX(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -958,7 +945,6 @@ void TSX(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->X & NEGATIVEBITMASK) > 0;
 }
 
-//100% Done
 void TXS(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -972,7 +958,6 @@ void TXS(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void PHA(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -985,7 +970,6 @@ void PHA(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void PHP(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -999,7 +983,6 @@ void PHP(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void PLA(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -1016,7 +999,6 @@ void PLA(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
 }
 
-//100% Done
 void PLP(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -1056,13 +1038,13 @@ void AND(CPU* cpu, Memory* memory, u32* cycles) {
             cpu->A &= readByte(cycles, absAddress, memory);
             break;
 
-        case Absolute_X:
+        case Absolute_X: //Implement Page Boundary
             Word absXAddress = fetchWord(cycles, cpu, memory);
             absXAddress += cpu->X;
             cpu->A &= readByte(cycles, absXAddress, memory);
             break;
 
-        case Absolute_Y:
+        case Absolute_Y: //Implement Page Boundary
             Word absYAddress = fetchWord(cycles, cpu, memory);
             absYAddress += cpu->Y;
             cpu->A &= readByte(cycles, absYAddress, memory);
@@ -1070,13 +1052,11 @@ void AND(CPU* cpu, Memory* memory, u32* cycles) {
 
         case IndexedIndirect:
             const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            *cycles -= 3;
             cpu->A &= readByte(cycles, readZeroPageAddressX(cycles, cpu, indirectXAddress, memory), memory);
             break;
 
-        case IndirectIndexed:
+        case IndirectIndexed: //Implement Page Boundary
             const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
-            *cycles -= 2;
             cpu->A &= readByte(cycles, readZeroPageAddressY(cycles, cpu, indirectYAddress, memory), memory);
             break;
 
@@ -1088,7 +1068,6 @@ void AND(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
 }
 
-//100% Done
 void EOR(CPU* cpu, Memory* memory, u32* cycles) {
     switch(cpu->mode) {
         case Immediate:
@@ -1112,13 +1091,13 @@ void EOR(CPU* cpu, Memory* memory, u32* cycles) {
             cpu->A ^= readByte(cycles, absAddress, memory);
             break;
 
-        case Absolute_X:
+        case Absolute_X: //Implement Page Boundary
             Word absXAddress = fetchWord(cycles, cpu, memory);
             absXAddress += cpu->X;
             cpu->A ^= readByte(cycles, absXAddress, memory);
             break;
 
-        case Absolute_Y:
+        case Absolute_Y: //Implement Page Boundary
             Word absYAddress = fetchWord(cycles, cpu, memory);
             absYAddress += cpu->Y;
             cpu->A ^= readByte(cycles, absYAddress, memory);
@@ -1126,13 +1105,11 @@ void EOR(CPU* cpu, Memory* memory, u32* cycles) {
 
         case IndexedIndirect:
             const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            *cycles -= 3;
             cpu->A ^= readByte(cycles, readZeroPageAddressX(cycles, cpu, indirectXAddress, memory), memory);
             break;
 
-        case IndirectIndexed:
+        case IndirectIndexed: //Implement Page Boundary
             const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
-            *cycles -= 2;
             cpu->A ^= readByte(cycles, readZeroPageAddressY(cycles, cpu, indirectYAddress, memory), memory);
             break;
 
@@ -1144,7 +1121,6 @@ void EOR(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
 }
 
-//100% Done
 void ORA(CPU* cpu, Memory* memory, u32* cycles) {
     switch(cpu->mode) {
         case Immediate:
@@ -1168,13 +1144,13 @@ void ORA(CPU* cpu, Memory* memory, u32* cycles) {
             cpu->A |= readByte(cycles, absAddress, memory);
             break;
 
-        case Absolute_X:
+        case Absolute_X: //Implement Page Boundary
             Word absXAddress = fetchWord(cycles, cpu, memory);
             absXAddress += cpu->X;
             cpu->A |= readByte(cycles, absXAddress, memory);
             break;
 
-        case Absolute_Y:
+        case Absolute_Y: //Implement Page Boundary
             Word absYAddress = fetchWord(cycles, cpu, memory);
             absYAddress += cpu->Y;
             cpu->A |= readByte(cycles, absYAddress, memory);
@@ -1182,13 +1158,11 @@ void ORA(CPU* cpu, Memory* memory, u32* cycles) {
 
         case IndexedIndirect:
             const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            *cycles -= 3;
             cpu->A |= readByte(cycles, readZeroPageAddressX(cycles, cpu, indirectXAddress, memory), memory);
             break;
 
-        case IndirectIndexed:
+        case IndirectIndexed: //Implement Page Boundary
             const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
-            *cycles -= 2;
             cpu->A |= readByte(cycles, readZeroPageAddressY(cycles, cpu, indirectYAddress, memory), memory);
             break;
 
@@ -1200,7 +1174,6 @@ void ORA(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->A & NEGATIVEBITMASK) > 0;
 }
 
-//100% Done
 void BIT(CPU* cpu, Memory* memory, u32* cycles) {
     Byte result = 0x00;
     Byte memVal = 0x00;
@@ -1227,7 +1200,6 @@ void BIT(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (NEGATIVEBITMASK & memVal) > 0;
 }
 
-//100% Done
 void ADC(CPU* cpu, Memory* memory, u32* cycles) {
     Byte memVal = 0x00;
 
@@ -1253,13 +1225,13 @@ void ADC(CPU* cpu, Memory* memory, u32* cycles) {
             memVal = readByte(cycles, absAddress, memory);
             break;
 
-        case Absolute_X:
+        case Absolute_X: //Implement Page Boundary
             Word absXAddress = fetchWord(cycles, cpu, memory);
             absXAddress += cpu->X;
             memVal = readByte(cycles, absXAddress, memory);
             break;
 
-        case Absolute_Y:
+        case Absolute_Y: //Implement Page Boundary
             Word absYAddress = fetchWord(cycles, cpu, memory);
             absYAddress += cpu->Y;
             memVal = readByte(cycles, absYAddress, memory);
@@ -1267,13 +1239,11 @@ void ADC(CPU* cpu, Memory* memory, u32* cycles) {
 
         case IndexedIndirect:
             const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            *cycles -= 3;
             memVal = readByte(cycles, readZeroPageAddressX(cycles, cpu, indirectXAddress, memory), memory);
             break;
 
-        case IndirectIndexed:
+        case IndirectIndexed: //Implement Page Boundary
             const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
-            *cycles -= 2;
             memVal = readByte(cycles, readZeroPageAddressY(cycles, cpu, indirectYAddress, memory), memory);
             break;
 
@@ -1323,7 +1293,6 @@ void ADC(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void SBC(CPU* cpu, Memory* memory, u32* cycles) {
     Byte memVal = 0x00;
 
@@ -1349,13 +1318,13 @@ void SBC(CPU* cpu, Memory* memory, u32* cycles) {
             memVal = readByte(cycles, absAddress, memory);
             break;
 
-        case Absolute_X:
+        case Absolute_X: //Implement Page Boundary
             Word absXAddress = fetchWord(cycles, cpu, memory);
             absXAddress += cpu->X;
             memVal = readByte(cycles, absXAddress, memory);
             break;
 
-        case Absolute_Y:
+        case Absolute_Y: //Implement Page Boundary
             Word absYAddress = fetchWord(cycles, cpu, memory);
             absYAddress += cpu->Y;
             memVal = readByte(cycles, absYAddress, memory);
@@ -1363,13 +1332,11 @@ void SBC(CPU* cpu, Memory* memory, u32* cycles) {
 
         case IndexedIndirect:
             const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            *cycles -= 3;
             memVal = readByte(cycles, readZeroPageAddressX(cycles, cpu, indirectXAddress, memory), memory);
             break;
 
-        case IndirectIndexed:
+        case IndirectIndexed: //Implement Page Boundary
             const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
-            *cycles -= 2;
             memVal = readByte(cycles, readZeroPageAddressY(cycles, cpu, indirectYAddress, memory), memory);
             break;
 
@@ -1430,7 +1397,6 @@ void SBC(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void CMP(CPU* cpu, Memory* memory, u32* cycles) {
     Byte memVal = 0x00;
 
@@ -1456,13 +1422,13 @@ void CMP(CPU* cpu, Memory* memory, u32* cycles) {
             memVal = readByte(cycles, absAddress, memory);
             break;
 
-        case Absolute_X:
+        case Absolute_X: //Implement Page Boundary
             Word absXAddress = fetchWord(cycles, cpu, memory);
             absXAddress += cpu->X;
             memVal = readByte(cycles, absXAddress, memory);
             break;
 
-        case Absolute_Y:
+        case Absolute_Y: //Implement Page Boundary
             Word absYAddress = fetchWord(cycles, cpu, memory);
             absYAddress += cpu->Y;
             memVal = readByte(cycles, absYAddress, memory);
@@ -1470,13 +1436,11 @@ void CMP(CPU* cpu, Memory* memory, u32* cycles) {
 
         case IndexedIndirect:
             const Byte indirectXAddress = fetchByte(cycles, cpu, memory);
-            *cycles -= 3;
             memVal = readByte(cycles, readZeroPageAddressX(cycles, cpu, indirectXAddress, memory), memory);
             break;
 
-        case IndirectIndexed:
+        case IndirectIndexed: //Implement Page Boundary
             const Byte indirectYAddress = fetchByte(cycles, cpu, memory);
-            *cycles -= 2;
             memVal = readByte(cycles, readZeroPageAddressY(cycles, cpu, indirectYAddress, memory), memory);
             break;
 
@@ -1489,7 +1453,6 @@ void CMP(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = ((cpu->A - memVal) & NEGATIVEBITMASK) > 0;
 }
 
-//100% Done
 void CPX(CPU* cpu, Memory* memory, u32* cycles) {
     Byte memVal = 0x00;
 
@@ -1517,7 +1480,6 @@ void CPX(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = ((cpu->X - memVal) & NEGATIVEBITMASK) > 0;
 }
 
-//100% Done
 void CPY(CPU* cpu, Memory* memory, u32* cycles) {
     Byte memVal = 0x00;
 
@@ -1545,7 +1507,6 @@ void CPY(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = ((cpu->Y - memVal) & NEGATIVEBITMASK) > 0;
 }
 
-//100% Done
 void INC(CPU* cpu, Memory* memory, u32* cycles) {
     Byte memVal = 0x00;
     switch (cpu->mode) {
@@ -1593,7 +1554,6 @@ void INC(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (memVal & NEGATIVEBITMASK) > 0;
 }
 
-//100% Done
 void INX(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -1609,7 +1569,6 @@ void INX(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->X & NEGATIVEBITMASK) > 0;
 }
 
-//100% Done
 void INY(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -1625,7 +1584,6 @@ void INY(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->Y & NEGATIVEBITMASK) > 0;
 }
 
-//100% Done
 void DEC(CPU* cpu, Memory* memory, u32* cycles) {
     Byte memVal = 0x00;
     switch (cpu->mode) {
@@ -1673,7 +1631,6 @@ void DEC(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (memVal & NEGATIVEBITMASK) > 0;
 }
 
-//100% Done
 void DEX(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -1689,7 +1646,6 @@ void DEX(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.N = (cpu->X & NEGATIVEBITMASK) > 0;
 }
 
-//100% Done
 void DEY(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -1773,7 +1729,6 @@ void ASL(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.C = (oldVal & NEGATIVEBITMASK) > 0;
 }
 
-//100% Done
 void LSR(CPU* cpu, Memory* memory, u32* cycles) {
     int isAcc = False;
     Byte memVal = 0x00;
@@ -1842,7 +1797,6 @@ void LSR(CPU* cpu, Memory* memory, u32* cycles) {
 }
 
 
-//100% Done
 void ROL(CPU* cpu, Memory* memory, u32* cycles) {
     int isAcc = False;
     Byte memVal = 0x00;
@@ -1916,7 +1870,6 @@ void ROL(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.C = (oldVal & NEGATIVEBITMASK) > 0;
 }
 
-//100% Done
 void ROR(CPU* cpu, Memory* memory, u32* cycles) {
     int isAcc = False;
     Byte memVal = 0x00;
@@ -1999,7 +1952,6 @@ void ROR(CPU* cpu, Memory* memory, u32* cycles) {
     cpu->status.C = oldBit0;
 }
 
-//Done?
 void JMP(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Absolute:
@@ -2019,7 +1971,6 @@ void JMP(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void JSR(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Absolute:
@@ -2035,12 +1986,12 @@ void JSR(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void RTS(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
             const Word returnAddress = popWordFromStack(cycles, cpu, memory);
             cpu->PC = returnAddress + 1;
+            *cycles -= 2;
             break;
 
         default:
@@ -2049,15 +2000,14 @@ void RTS(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void BCC(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
-        case Relative:
+        case Relative: //Implement Page Crossed
             const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
             if (!cpu->status.C) {
                 cpu->PC += offset;
+                *cycles -= 1;
             }
-            *cycles -= 1;
             break;
 
         default:
@@ -2066,15 +2016,14 @@ void BCC(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void BCS(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
-        case Relative:
+        case Relative: //Implement Page Crossed
             const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
             if (cpu->status.C) {
                 cpu->PC += offset;
+                *cycles -= 1;
             }
-            *cycles -= 1;
             break;
 
         default:
@@ -2083,15 +2032,14 @@ void BCS(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void BEQ(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
-        case Relative:
+        case Relative: //Implement Page Crossed
             const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
             if (cpu->status.Z) {
                 cpu->PC += offset;
+                *cycles -= 1;
             }
-            *cycles -= 1;
             break;
 
         default:
@@ -2100,15 +2048,14 @@ void BEQ(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void BMI(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
-        case Relative:
+        case Relative: //Implement Page Crossed
             const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
             if (cpu->status.N) {
                 cpu->PC += offset;
+                *cycles -= 1;
             }
-            *cycles -= 1;
             break;
 
         default:
@@ -2117,15 +2064,14 @@ void BMI(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void BNE(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
-        case Relative:
+        case Relative: //Implement Page Crossed
             const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
             if (!cpu->status.Z) {
                 cpu->PC += offset;
+                *cycles -= 1;
             }
-            *cycles -= 1;
             break;
 
         default:
@@ -2134,15 +2080,14 @@ void BNE(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void BPL(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
-        case Relative:
+        case Relative: //Implement Page Crossed
             const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
             if (!cpu->status.N) {
                 cpu->PC += offset;
+                *cycles -= 1;
             }
-            *cycles -= 1;
             break;
 
         default:
@@ -2151,15 +2096,14 @@ void BPL(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void BVC(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
-        case Relative:
+        case Relative: //Implement Page Crossed
             const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
             if (!cpu->status.V) {
                 cpu->PC += offset;
+                *cycles -= 1;
             }
-            *cycles -= 1;
             break;
 
         default:
@@ -2168,15 +2112,14 @@ void BVC(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void BVS(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
-        case Relative:
+        case Relative: //Implement Page Crossed
             const Byte_s offset = (Byte_s) fetchByte(cycles, cpu, memory);
             if (cpu->status.V) {
                 cpu->PC += offset;
+                *cycles -= 1;
             }
-            *cycles -= 1;
             break;
 
         default:
@@ -2185,7 +2128,6 @@ void BVS(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void CLC(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -2199,7 +2141,6 @@ void CLC(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void CLD(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -2213,7 +2154,6 @@ void CLD(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void CLI(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -2227,7 +2167,6 @@ void CLI(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void CLV(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -2241,7 +2180,6 @@ void CLV(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void SEC(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -2255,7 +2193,6 @@ void SEC(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void SED(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -2269,7 +2206,6 @@ void SED(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void SEI(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -2283,7 +2219,6 @@ void SEI(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void BRK(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -2292,7 +2227,6 @@ void BRK(CPU* cpu, Memory* memory, u32* cycles) {
             pushByteToStack(cycles, cpu, psStack, memory);
             cpu->PC = readWord(cycles, IRQVEC_HI, memory);
             cpu->status.I = True;
-            *cycles -= 1;
             break;
 
         default:
@@ -2301,7 +2235,6 @@ void BRK(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void RTI(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
@@ -2317,7 +2250,6 @@ void RTI(CPU* cpu, Memory* memory, u32* cycles) {
     }
 }
 
-//100% Done
 void NOP(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit:
