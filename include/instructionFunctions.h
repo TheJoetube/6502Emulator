@@ -3,6 +3,9 @@
 
 #include "constants.h"
 
+/**
+ * A struct defining all CPU instructions.
+ */
 typedef union {
     struct {
         //LDA
@@ -271,28 +274,155 @@ typedef union {
     Instruction instructions[];
 }Instructions;
 
+/**
+ * A global variable that holds all instructions.
+ */
 Instructions inst;
 
+/**
+ * A global variable that holds all instruction names by opcode.
+ * (For debugging only)
+ */
 extern const char* instNames[];
 
+/**
+ * Populates the Instructions struct with values.
+ */
 void initInstructions();
+
+/**
+ * Returns a pointer to an instructions metadata based on opcode.
+ * @param instruction The opcode to decode
+ * @param cpu A pointer to a CPU struct
+ * @return
+ */
 Instruction* getInstruction(Byte instruction, CPU* cpu);
+
+/**
+ * Uses 1 Cycle.
+ * @param cycles
+ * @param cpu
+ * @param memory
+ * @return
+ */
 Byte fetchByte(u32 *cycles, CPU *cpu, const Memory *memory);
+
+/**
+ * Uses 1 Cycle.
+ * @param cycles
+ * @param address
+ * @param memory
+ * @return
+ */
 Byte readByte(u32* cycles, Word address, const Memory* memory);
+
+/**
+ * Uses 1 Cycle.
+ * @param cycles
+ * @param data
+ * @param address
+ * @param memory
+ */
 void writeByte(u32* cycles, Byte data, Word address, Memory* memory);
+
+/**
+ * Uses 2 Cycles.
+ * @param cycles
+ * @param cpu
+ * @param data
+ * @param memory
+ */
 void pushByteToStack(u32* cycles, CPU* cpu, Byte data, Memory *memory);
+
+/**
+ * Uses 2 Cycles.
+ * @param cycles
+ * @param cpu
+ * @param memory
+ * @return
+ */
 Byte popByteFromStack(u32* cycles, CPU* cpu, const Memory *memory);
 
+/**
+ * Uses 2 cycles.
+ * @param cycles
+ * @param cpu
+ * @param memory
+ * @return
+ */
 Word fetchWord(u32* cycles, CPU *cpu, const Memory *memory);
+
+/**
+ * Uses 2 cycles.
+ * @param cycles
+ * @param address
+ * @param memory
+ * @return
+ */
 Word readWord(u32* cycles, Word address, const Memory* memory);
+
+/**
+ * Uses 2 cycles.
+ * @param cycles
+ * @param data
+ * @param address
+ * @param memory
+ */
 void writeWord(u32* cycles, Word data, Word address, Memory *memory);
+
+/**
+ * Uses 2 Cycles.
+ * @param cycles
+ * @param cpu
+ * @param data
+ * @param memory
+ */
 void pushWordToStack(u32* cycles, CPU* cpu, Word data, Memory *memory);
+
+/**
+ * Uses 4 Cycles.
+ * @param cycles
+ * @param cpu
+ * @param memory
+ * @return
+ */
 Word popWordFromStack(u32* cycles, CPU* cpu, const Memory *memory);
 
+/**
+ * Uses 3 Cycles.
+ * @param cycles
+ * @param cpu
+ * @param address
+ * @param memory
+ * @return
+ */
 Word readZeroPageAddressX(u32* cycles, const CPU* cpu, Byte address, const Memory* memory);
+
+/**
+ * Uses 2 Cycles.
+ * @param cycles
+ * @param cpu
+ * @param address
+ * @param memory
+ * @return
+ */
 Word readZeroPageAddressY(u32* cycles, const CPU* cpu, Byte address, const Memory* memory);
 
+/**
+ * Adds a cycle if the address crossed a page boundary.
+ * @param cycles
+ * @param address1
+ * @param address2
+ */
 void crossedPageBoundary(u32* cycles, Word address1, Word address2);
+
+/**
+ * Adds a cycle if the PC crossed a page boundary.
+ * @param cycles
+ * @param pc1
+ * @param pc2
+ */
+void crossedPageBoundaryPC(u32* cycles, Word pc1, Word pc2);
 
 //--Load/Store-Operations--//
 void LDA(CPU* cpu, Memory* memory, u32* cycles);

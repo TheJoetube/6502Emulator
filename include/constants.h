@@ -20,6 +20,9 @@
 
 #define NONMATCHCASE "Non matched Instruction (From Switch)"
 
+/**
+ * The different CPU addressing modes.
+ */
 typedef enum {
     Implicit,
     Accumulator,
@@ -36,6 +39,9 @@ typedef enum {
     IndirectIndexed,
 } Mode;
 
+/**
+ * A struct representing the CPU status registers.
+ */
 typedef union {
     struct {
         Byte C:1; //Carry Flag
@@ -50,6 +56,9 @@ typedef union {
     Byte value;
 } Status;
 
+/**
+ * A struct representing a CPU.
+ */
 typedef struct {
     Word PC; //program counter
     Byte SP; //stack pointer
@@ -61,16 +70,25 @@ typedef struct {
     Mode mode;
 } CPU;
 
+/**
+ * A struct representing run parameters for execution.
+ */
 typedef struct {
     u32 numCycles;
     int constRun;
     int clockSpeed;
 } RunParams;
 
+/**
+ * A struct representing the Memory of the CPU.
+ */
 typedef union {
     Byte data[MEMSIZE];
 } Memory;
 
+/**
+ * A struct representing an Instruction.
+ */
 typedef struct {
     Byte opcode;
     int cycles;

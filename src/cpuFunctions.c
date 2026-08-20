@@ -8,6 +8,23 @@
 #include <unistd.h>
 #endif
 
+void fillMemory(const char* fileName, Memory* memory) {
+    FILE *fp = fopen(fileName, "rb");
+
+    if (fp == NULL) {
+        printf("Error opening file.\n");
+        return;
+    }
+
+    fseek(fp, 0, SEEK_END);
+    const long filelen = ftell(fp);
+    rewind(fp);
+
+    fread(memory, sizeof(Byte), filelen, fp);
+
+    fclose(fp);
+}
+
 void reset(CPU* cpu, const Memory* memory) {
     initInstructions();
 
@@ -28,10 +45,6 @@ void reset(CPU* cpu, const Memory* memory) {
     //printf("Resvec Points to: 0x%04x\n", cpu->PC);
 }
 
-/**
- * Prints information about the cpu.
- * @param cpu A pointer to a CPU struct
- */
 void printStatus(const CPU* cpu) {
     fprintf(stderr,"A: 0x%02x X: 0x%02x Y: 0x%02x ", cpu->A, cpu->X, cpu->Y);
     fprintf(stderr,"PC: 0x%04x SP: 0x%02x ", cpu->PC, cpu->SP);

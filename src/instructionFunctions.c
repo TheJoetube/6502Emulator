@@ -2,9 +2,6 @@
 #include "../include/constants.h"
 #include <stdio.h>
 
-/**
- * Used for debugging.
- */
 const char* instNames[256] = {
     // 0x0x
     [0x00] = "BRK_IMP",
@@ -190,9 +187,6 @@ const char* instNames[256] = {
     [0xFE] = "INC_ABS_X"
 };
 
-/**
- * Initializes all the instructions
- */
 void initInstructions() {
     //LDA
     inst.LDA_IM = (Instruction){0xA9,2,Immediate,LDA};
@@ -458,13 +452,6 @@ void initInstructions() {
     inst.NOP_IMP = (Instruction){0xEA,2,Implicit,NOP};
 }
 
-/**
- * Uses 1 Cycle
- * @param cycles
- * @param cpu
- * @param memory
- * @return
- */
 Byte fetchByte(u32* cycles, CPU* cpu, const Memory* memory) {
     const Byte data = memory->data[cpu->PC];
     cpu->PC++;
@@ -472,38 +459,17 @@ Byte fetchByte(u32* cycles, CPU* cpu, const Memory* memory) {
     return data;
 }
 
-/**
- * Uses 1 Cycle
- * @param cycles
- * @param address
- * @param memory
- * @return
- */
 Byte readByte(u32* cycles, const Word address, const Memory* memory) {
     const Byte data = memory->data[address];
     *cycles -= 1;
     return data;
 }
 
-/**
- * Uses 1 Cycle
- * @param cycles
- * @param data
- * @param address
- * @param memory
- */
 void writeByte(u32* cycles, const Byte data, const Word address, Memory* memory) {
     memory->data[address] = data;
     *cycles -= 1;
 }
 
-/**
- * Uses 2 cycles
- * @param cycles
- * @param cpu
- * @param memory
- * @return
- */
 Word fetchWord(u32* cycles, CPU *cpu, const Memory *memory) {
     //6502 is little endian
     Word data = memory->data[cpu->PC];
@@ -516,39 +482,18 @@ Word fetchWord(u32* cycles, CPU *cpu, const Memory *memory) {
     return data;
 }
 
-/**
- * Uses 2 cycles
- * @param cycles
- * @param address
- * @param memory
- * @return
- */
 Word readWord(u32* cycles, const Word address, const Memory* memory) {
     const Byte loByte = readByte(cycles, address, memory);
     const Byte hiByte = readByte(cycles, address + 1, memory);
     return loByte | (hiByte << 8);
 }
 
-/**
- * Uses 2 cycles
- * @param cycles
- * @param data
- * @param address
- * @param memory
- */
 void writeWord(u32* cycles, const Word data, const Word address, Memory *memory) {
     memory->data[address] = data & 0xFF;
     memory->data[address+1] = (data >> 8);
     *cycles -= 2;
 }
 
-/**
- * Uses 2 Cycles
- * @param cycles
- * @param cpu
- * @param data
- * @param memory
- */
 void pushWordToStack(u32* cycles, CPU* cpu, const Word data, Memory *memory) {
     writeByte(cycles, data >> 8, STACKSTART + cpu->SP, memory);
     cpu->SP -= 1;
@@ -557,13 +502,6 @@ void pushWordToStack(u32* cycles, CPU* cpu, const Word data, Memory *memory) {
     cpu->SP -= 1;
 }
 
-/**
- * Uses 2 Cycles
- * @param cycles
- * @param cpu
- * @param data
- * @param memory
- */
 void pushByteToStack(u32* cycles, CPU* cpu, const Byte data, Memory *memory) {
     memory->data[STACKSTART + cpu->SP] = data;
     *cycles -= 1;
@@ -571,13 +509,6 @@ void pushByteToStack(u32* cycles, CPU* cpu, const Byte data, Memory *memory) {
     *cycles -= 1;
 }
 
-/**
- * Uses 2 Cycles
- * @param cycles
- * @param cpu
- * @param memory
- * @return
- */
 Byte popByteFromStack(u32* cycles, CPU* cpu, const Memory *memory) {
     cpu->SP += 1;
     *cycles -= 1;
@@ -586,27 +517,12 @@ Byte popByteFromStack(u32* cycles, CPU* cpu, const Memory *memory) {
     return value;
 }
 
-/**
- * Uses 4 Cycles
- * @param cycles
- * @param cpu
- * @param memory
- * @return
- */
 Word popWordFromStack(u32* cycles, CPU* cpu, const Memory* memory) {
     const Byte low = popByteFromStack(cycles, cpu, memory);
     const Byte high = popByteFromStack(cycles, cpu, memory);
     return ((high << 8) | low);
 }
 
-/**
- * Uses 3 Cycles
- * @param cycles
- * @param cpu
- * @param address
- * @param memory
- * @return
- */
 Word readZeroPageAddressX(u32* cycles, const CPU* cpu, Byte address, const Memory* memory) {
     address += cpu->X;
     *cycles -= 1;
@@ -616,14 +532,6 @@ Word readZeroPageAddressX(u32* cycles, const CPU* cpu, Byte address, const Memor
     return (high << 8) | low;
 }
 
-/**
- * Uses 2 Cycles
- * @param cycles
- * @param cpu
- * @param address
- * @param memory
- * @return
- */
 Word readZeroPageAddressY(u32* cycles, const CPU* cpu, const Byte address, const Memory* memory) {
     const Byte low = readByte(cycles, address, memory);
     const Byte high = readByte(cycles, (address + 1) & 0xFF, memory);
