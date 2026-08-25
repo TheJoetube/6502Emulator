@@ -25,7 +25,7 @@ void fillMemory(const char* fileName, Memory* memory) {
     fclose(fp);
 }
 
-void reset(CPU* cpu, const Memory* memory) {
+void reset(CPU* cpu, Memory* memory) {
     initInstructions();
 
     cpu->PC = RESVEC_LO;
@@ -35,7 +35,7 @@ void reset(CPU* cpu, const Memory* memory) {
     cpu->status.I = 1;
     cpu->status.Unused = 1;
     cpu->mode = Immediate;
-    //memset(memory, 0, sizeof(Byte));
+    memset(memory->data, 0, sizeof(memory->data));
 
     Word resVec = memory->data[RESVEC_LO];
     resVec |= memory->data[RESVEC_HI] << 8;
@@ -68,6 +68,8 @@ void setDefaultParams(RunParams* params) {
     params->numCycles = 0;
     params->constRun = False;
     params->clockSpeed = 0;
+    params->stepped = False;
+    params->verboseOutput = False;
 }
 
 void execute(CPU* cpu, Memory* memory, RunParams params) {
@@ -78,23 +80,35 @@ void execute(CPU* cpu, Memory* memory, RunParams params) {
             fprintf(stderr,"Success\n");
             return;
         }
+        if (params.stepped) {
+            getchar();
+        }
+
         //--fetch--//
         const Byte instructionByte = fetchByte(&params.numCycles, cpu, memory);
 
+        /*if (instructionByte == 0x00) {
+            return;
+        }*/
+
         //--decode--//
         const Instruction decodedInstruction = *getInstruction(instructionByte, cpu);
-        //fprintf(stderr,"%s:\n", instNames[decodedInstruction.opcode]);
+        if (params.verboseOutput) {
+            fprintf(stderr,"%s:\n", instNames[decodedInstruction.opcode]);
+        }
 
         //--execute--//
         decodedInstruction.execute(cpu, memory, &params.numCycles);
 
-        //printStatus(cpu);
-        //printPC(cpu);
+        if (params.verboseOutput) {
+            printStatus(cpu);
+            //printPC(cpu);
+        }
 
         #ifdef _WIN32
         Sleep(params.clockSpeed);
         #else
-        usleep(params.clockSpeed*1000);
+        usleep(params.clockSpeed);
         #endif
     }
 }

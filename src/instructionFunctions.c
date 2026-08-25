@@ -959,7 +959,7 @@ void PHA(CPU* cpu, Memory* memory, u32* cycles) {
 void PHP(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit: {
-            const Byte psStack = cpu->status.value | 0b000010000 | 0b000100000;
+            const Byte psStack = cpu->status.value | BREAKBITMASK | UNUSEDBITMASK;
             pushByteToStack(cycles, cpu, psStack, memory);
             break;
         }
@@ -2379,7 +2379,7 @@ void BRK(CPU* cpu, Memory* memory, u32* cycles) {
     switch (cpu->mode) {
         case Implicit: {
             pushWordToStack(cycles, cpu, cpu->PC + 1, memory);
-            const Byte psStack = cpu->status.value | 0b00010000 | 0b00100000;
+            const Byte psStack = cpu->status.value | BREAKBITMASK | UNUSEDBITMASK;
             pushByteToStack(cycles, cpu, psStack, memory);
             cpu->PC = readWord(cycles, IRQVEC_HI, memory);
             cpu->status.I = True;

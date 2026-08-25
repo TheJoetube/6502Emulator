@@ -17,6 +17,14 @@
 #define IRQVEC_LO 0xFFFF
 
 #define NEGATIVEBITMASK 0b10000000
+#define OVERFLOWBITMASK 0b01000000
+#define UNUSEDBITMASK 0b00100000
+#define BREAKBITMASK 0b00010000
+#define DECIMALBITMASK 0b00001000
+#define DECIMALBITMASK 0b00001000
+#define INTERRUPTDISABLEBITMASK 0b00000100
+#define ZEROBITMASK 0b00000010
+#define CARRYBITMASK 0x00000001
 
 #define NONMATCHCASE "Non matched Instruction (From Switch)"
 
@@ -76,7 +84,9 @@ typedef struct {
 typedef struct {
     u32 numCycles;
     int constRun;
-    int clockSpeed;
+    int clockSpeed; //in microseconds
+    int stepped;
+    int verboseOutput;
 } RunParams;
 
 /**

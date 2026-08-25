@@ -21,7 +21,7 @@ void setDefaultParams(RunParams* params);
  * @param cpu A pointer to a CPU struct
  * @param memory A pointer to a Memory struct
  */
-void reset(CPU* cpu, const Memory* memory);
+void reset(CPU* cpu, Memory* memory);
 
 /**
  * Prints information about the cpu.
